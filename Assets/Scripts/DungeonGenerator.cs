@@ -8,8 +8,9 @@ public class DungeonGenerator : MonoBehaviour {
 	public int width;
 	public int height;
 	
-	public GameObject cellPrefab;
-	
+	public GameObject wallPrefab;
+	public GameObject floorPrefab;
+
 	Texture2D textureMap;
 
 	static MapCell [,] map;
@@ -59,7 +60,9 @@ public class DungeonGenerator : MonoBehaviour {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				if (map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder)
-					GameObject.Instantiate(cellPrefab, new Vector3(i,0,j), Quaternion.identity);
+					GameObject.Instantiate(wallPrefab, new Vector3(i,0,j), Quaternion.identity);
+				if (map[i,j].cellKind == MapCell.CellKind.WALKABLE )
+					GameObject.Instantiate(floorPrefab, new Vector3(i,0,j), Quaternion.identity);
 			}
 		}
 	}
