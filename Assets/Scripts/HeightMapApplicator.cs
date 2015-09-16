@@ -25,9 +25,6 @@ public class HeightMapApplicator : MonoBehaviour {
 		terrain.terrainData.SetHeights (0,0,heights);
 	}
 
-	float[,] generateHeightMap(){
-		
-	}
 
 	// Update is called once per frame
 	void Update () {

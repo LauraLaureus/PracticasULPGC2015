@@ -4,21 +4,27 @@ using System.Collections.Generic;
 using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
-	
-	public int width;
-	public int height;
-	
-	public GameObject wallPrefab;
-	public GameObject floorPrefab;
 
+	public Terrain terrain;
+
+	
+	int width;
+	int height;
+
+	
 	Texture2D textureMap;
 
-	static MapCell [,] map;
+	public static MapCell [,] map;
 	List<Door> doors;
 	int diggedAmount = 0;
 	List<Miner> miners;
 	
 	void Start () {
+		width = (int)terrain.terrainData.heightmapWidth/2;
+		height= (int)terrain.terrainData.heightmapHeight/2;
+
+		Debug.Log (width);
+
 		textureMap = new Texture2D(width, height);
 		textureMap.filterMode = FilterMode.Point;
 		
@@ -55,16 +61,28 @@ public class DungeonGenerator : MonoBehaviour {
 	
 	void ShowMap() {
 		textureMap.Apply();
-		GetComponent<Renderer>().material.mainTexture = textureMap;
-		
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				if (map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder)
-					GameObject.Instantiate(wallPrefab, new Vector3(i,0,j), Quaternion.identity);
-				if (map[i,j].cellKind == MapCell.CellKind.WALKABLE )
-					GameObject.Instantiate(floorPrefab, new Vector3(i,0,j), Quaternion.identity);
+
+
+		float[,] heights = new float[width*2,height*2];
+
+		for (int i = 0; i < width; i++){
+			for (int j=0; j< height; j++){
+				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
+					heights[2*i,2*j] = 0.02f;
+					heights[2*i,2*j+1] = 0.02f;
+					heights[2*i+1,2*j] = 0.02f;
+					heights[2*i+1,2*j+1] = 0.02f;
+				}else{
+					heights[2*i,2*j] = 0f;
+					heights[2*i,2*j+1] = 0f;
+					heights[2*i+1,2*j] = 0f;
+					heights[2*i+1,2*j+1] = 0f;
+				}
 			}
 		}
+
+		terrain.terrainData.SetHeights (0, 0, heights);
+
 	}
 	
 	void CleanMap () { //Zonas no pisables
