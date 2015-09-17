@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
-	
+
+	public delegate void MapGenerated();
+	public static event MapGenerated OnMapCreated;
+
 	Terrain terrain;
 	
 	int width;
@@ -41,8 +44,13 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 		DigMap();
 		ShowMap ();
-
+		Live ();
 	
+	}
+
+	void Live(){
+		if (OnMapCreated != null)
+			OnMapCreated ();
 	}
 	
 	void DigMap() {
