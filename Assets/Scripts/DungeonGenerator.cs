@@ -5,12 +5,10 @@ using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
 	
-	public Terrain terrain;
-	
+	Terrain terrain;
 	
 	int width;
 	int height;
-	
 	
 	Texture2D textureMap;
 	
@@ -20,6 +18,7 @@ public class DungeonGenerator : MonoBehaviour {
 	List<Miner> miners;
 
 	void Start () {
+		terrain = this.gameObject.GetComponent<Terrain>();
 		width = (int)terrain.terrainData.heightmapWidth/2;
 		height= (int)terrain.terrainData.heightmapHeight/2;
 		
@@ -41,7 +40,9 @@ public class DungeonGenerator : MonoBehaviour {
 			miners.Add (miner);
 		}
 		DigMap();
-		ShowMap ();		
+		ShowMap ();
+
+	
 	}
 	
 	void DigMap() {
@@ -68,16 +69,8 @@ public class DungeonGenerator : MonoBehaviour {
 			for (int j=0; j< height; j++){
 				Debug.Log(map[i,j].cellKind);
 				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
-					//heights[2*i,2*j] = 0.02f;
-					//heights[2*i,2*j+1] = 0.02f;
-					//heights[2*i+1,2*j] = 0.02f;
-					//heights[2*i+1,2*j+1] = 0.02f;
 					heights = upAWall(i,j,2,0.02f,heights);
 				}else{
-					//heights[2*i,2*j] = 0f;
-					//heights[2*i,2*j+1] = 0f;
-					//heights[2*i+1,2*j] = 0f;
-					//heights[2*i+1,2*j+1] = 0f;
 					heights = upAWall(i,j,2,0f,heights);
 				}
 			}
