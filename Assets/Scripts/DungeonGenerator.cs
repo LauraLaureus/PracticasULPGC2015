@@ -67,6 +67,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 		for (int i = 0; i < width; i++){
 			for (int j=0; j< height; j++){
+				Debug.Log(map[i,j].cellKind);
 				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
 					heights[2*i,2*j] = 0.02f;
 					heights[2*i,2*j+1] = 0.02f;
