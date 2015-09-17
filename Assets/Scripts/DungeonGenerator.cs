@@ -4,26 +4,25 @@ using System.Collections.Generic;
 using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
-
+	
 	public Terrain terrain;
-
+	
 	
 	int width;
 	int height;
-
+	
 	
 	Texture2D textureMap;
-
+	
 	public static MapCell [,] map;
 	List<Door> doors;
 	int diggedAmount = 0;
 	List<Miner> miners;
-	
+
 	void Start () {
 		width = (int)terrain.terrainData.heightmapWidth/2;
 		height= (int)terrain.terrainData.heightmapHeight/2;
-
-		Debug.Log (width);
+		
 
 		textureMap = new Texture2D(width, height);
 		textureMap.filterMode = FilterMode.Point;
@@ -61,31 +60,58 @@ public class DungeonGenerator : MonoBehaviour {
 	
 	void ShowMap() {
 		textureMap.Apply();
-
-
+		
+		
 		float[,] heights = new float[width*2,height*2];
-
+		
 		for (int i = 0; i < width; i++){
 			for (int j=0; j< height; j++){
 				Debug.Log(map[i,j].cellKind);
 				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
-					heights[2*i,2*j] = 0.02f;
-					heights[2*i,2*j+1] = 0.02f;
-					heights[2*i+1,2*j] = 0.02f;
-					heights[2*i+1,2*j+1] = 0.02f;
+					//heights[2*i,2*j] = 0.02f;
+					//heights[2*i,2*j+1] = 0.02f;
+					//heights[2*i+1,2*j] = 0.02f;
+					//heights[2*i+1,2*j+1] = 0.02f;
+					heights = upAWall(i,j,2,0.02f,heights);
 				}else{
-					heights[2*i,2*j] = 0f;
-					heights[2*i,2*j+1] = 0f;
-					heights[2*i+1,2*j] = 0f;
-					heights[2*i+1,2*j+1] = 0f;
+					//heights[2*i,2*j] = 0f;
+					//heights[2*i,2*j+1] = 0f;
+					//heights[2*i+1,2*j] = 0f;
+					//heights[2*i+1,2*j+1] = 0f;
+					heights = upAWall(i,j,2,0f,heights);
 				}
 			}
 		}
-
+		
 		terrain.terrainData.SetHeights (0, 0, heights);
+		
+	}
+
+	float[,] upAWall(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
+		int diagonalPoint = rate;
+		while (diagonalPoint > 0) {
+			heightMap = upPointsInHorizontal( indexX, indexY, rate, wallHeight, heightMap);
+			heightMap = upPointsInVertical(indexX,indexY,rate, wallHeight, heightMap);
+			diagonalPoint -=1;
+		}
+		return heightMap;
+	}
+
+	float[,] upPointsInHorizontal(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
+		for (int i = 0; i < rate; i++) {
+			heightMap[rate*indexX+i,rate*indexY] = wallHeight;
+		}
+		return heightMap;
+	}
+
+	float[,] upPointsInVertical(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
+		for (int i = 0; i < rate; i++) {
+			heightMap[rate*indexX,rate*indexY+i] = wallHeight;
+		}
+		return heightMap;
 
 	}
-	
+
 	void CleanMap () { //Zonas no pisables
 		List<int[]> checkList = new List<int[]>();
 		List<int[]> zones = new List<int[]>();
@@ -112,7 +138,7 @@ public class DungeonGenerator : MonoBehaviour {
 				}
 			}
 		}
-			
+		
 		//Buscamos las paredes
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -154,8 +180,8 @@ public class DungeonGenerator : MonoBehaviour {
 						if (map[i,j].cellKind == MapCell.CellKind.WALL)
 							if (map[i,j].isBorder)
 								UpdateVisualMap(i, j, Color.black);
-							else
-								UpdateVisualMap(i, j, Color.gray);
+						else
+							UpdateVisualMap(i, j, Color.gray);
 					}
 				}
 			}
@@ -334,12 +360,12 @@ public class DungeonGenerator : MonoBehaviour {
 				map[x + 1, y].cellKind == MapCell.CellKind.WALL && 
 				map[x, y - 1].cellKind == MapCell.CellKind.WALKABLE && 
 				map[x, y + 1].cellKind == MapCell.CellKind.WALKABLE) ||
-				(
+			     (
 				map[x - 1, y].cellKind == MapCell.CellKind.WALKABLE &&
 				map[x + 1, y].cellKind == MapCell.CellKind.WALKABLE && 
 				map[x, y - 1].cellKind == MapCell.CellKind.WALL && 
 				map[x, y + 1].cellKind == MapCell.CellKind.WALL)) && 
-				(
+			    (
 				map[x, y - 1].door == null && 
 				map[x, y + 1].door == null && 
 				map[x - 1, y].door == null && 
@@ -357,3 +383,6 @@ public class DungeonGenerator : MonoBehaviour {
 	
 	
 }
+
+
+		
