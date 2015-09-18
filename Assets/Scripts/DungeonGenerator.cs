@@ -51,10 +51,12 @@ public class DungeonGenerator : MonoBehaviour {
 	void CreatePlayer(){
 
 		Door selectedDoor = selectDoor ();
-
+		selectedDoor.translateInto(width,height);
 		if (OnMapCreated != null)
 			OnMapCreated (selectedDoor);
 	}
+
+
 
 	Door selectDoor(){
 		int index = (int) Random.value * doors.Count;

@@ -5,6 +5,7 @@ public class Door {
 	public int zoneTo;
 	public int doorDirection; // 0: horizontal, 1 vertical
 	MapCell [,] map;
+	public float x_t, y_t;
 	
 	public Door (int x, int y, int zoneFrom, MapCell[,] map) {
 		this.x = x;
@@ -13,6 +14,14 @@ public class Door {
 		this.map = map;
 		zoneTo = 0;
 		doorDirection = -1;
+	}
+
+	public Door(){
+	}
+
+	public void translateInto(int width,int height){
+		x_t = ((float)x) / ((float)width);
+		y_t = ((float)y) / ((float)height);
 	}
 		
 	public void updateDoorDirection () {
