@@ -4,14 +4,14 @@ using System.Collections;
 public class PlayerCreator : MonoBehaviour {
 	
 	protected void OnEnable (){
-		DungeonGenerator.OnMapCreated += this.CreateUnit;
+		DungeonGenerator.OnMapCreated += this.CreatePlayer;
 	}
 	
-	protected void CreateUnit(Door d){
-		Debug.Log ("Eres una crack");
+	protected void CreatePlayer(Door d){
+
 	}
 	
 	protected void OnDisable(){
-		DungeonGenerator.OnMapCreated -= this.CreateUnit;
+		DungeonGenerator.OnMapCreated -= this.CreatePlayer;
 	}
 }

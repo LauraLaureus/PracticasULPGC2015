@@ -44,13 +44,21 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 		DigMap();
 		ShowMap ();
-		Live ();
+		CreatePlayer ();
 	
 	}
 
-	void Live(){
+	void CreatePlayer(){
+
+		Door selectedDoor = selectDoor ();
+
 		if (OnMapCreated != null)
-			OnMapCreated (doors[0]);
+			OnMapCreated (selectedDoor);
+	}
+
+	Door selectDoor(){
+		int index = (int) Random.value * doors.Count;
+		return doors [index];
 	}
 	
 	void DigMap() {
@@ -75,7 +83,7 @@ public class DungeonGenerator : MonoBehaviour {
 		
 		for (int i = 0; i < width; i++){
 			for (int j=0; j< height; j++){
-				Debug.Log(map[i,j].cellKind);
+
 				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
 					heights = upAWall(i,j,2,0.02f,heights);
 				}else{
