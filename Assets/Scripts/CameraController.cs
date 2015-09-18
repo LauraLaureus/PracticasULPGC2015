@@ -3,16 +3,28 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-	public GameObject player;
+	GameObject player;
 
 	private Vector3 offset;
-	// Use this for initialization
-	void Start () {
-		offset = transform.position - player.transform.position;
+
+	void onEnable(){
+		PlayerCreator.onFollow += iFollow;
 	}
-	
+
+	void iFollow(GameObject player){
+		this.player = player;
+		offset = transform.position - player.transform.position;
+		Debug.Log ("Called");
+	}
+
+	void onDisable(){
+		PlayerCreator.onFollow -= iFollow;
+	}
+
+
 	// Update is called once per frame
 	void LateUpdate () {
-		transform.position = player.transform.position + offset;
+		if (offset.Equals(null))
+			transform.position = player.transform.position + offset;
 	}
 }
