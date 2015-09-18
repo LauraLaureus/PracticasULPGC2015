@@ -5,7 +5,7 @@ using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
 
-	public delegate void MapGenerated();
+	public delegate void MapGenerated(Door d);
 	public static event MapGenerated OnMapCreated;
 
 	Terrain terrain;
@@ -50,7 +50,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 	void Live(){
 		if (OnMapCreated != null)
-			OnMapCreated ();
+			OnMapCreated (doors[0]);
 	}
 	
 	void DigMap() {
