@@ -3,23 +3,19 @@ using System.Collections;
 
 public class PlayerCreator : MonoBehaviour {
 
-	public delegate void FollowThePlayer(GameObject player);
-	public static event FollowThePlayer onFollow;
+	public GameObject playerPrefab;
+	public CameraController cameraController;
 
-	public GameObject player;
-	
 	protected void OnEnable (){
 		DungeonGenerator.OnMapCreated += this.CreatePlayer;
 	}
 	
 	protected void CreatePlayer(Door d){
-		player.transform.position = new Vector3(d.x_t,0.005f,d.y_t);
-		Instantiate (player);
+		//Instantiate (player);
 
-		if (onFollow != null) {
-			Debug.Log ("Called - PlayerCreator");
-			onFollow (player);
-		}
+		GameObject player = (GameObject) GameObject.Instantiate (playerPrefab, new Vector3 (d.x_t*512, 1f, d.y_t*512), Quaternion.identity);
+		cameraController.setPlayer (player);
+
 	}
 	
 	protected void OnDisable(){
