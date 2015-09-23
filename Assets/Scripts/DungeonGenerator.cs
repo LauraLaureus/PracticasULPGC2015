@@ -8,6 +8,9 @@ public class DungeonGenerator : MonoBehaviour {
 	public delegate void MapGenerated(Door d);
 	public static event MapGenerated OnMapCreated;
 
+	public int factor;
+	public float wallheight;
+
 	Terrain terrain;
 	
 	int width;
@@ -22,8 +25,8 @@ public class DungeonGenerator : MonoBehaviour {
 
 	void Start () {
 		terrain = this.gameObject.GetComponent<Terrain>();
-		width = (int)terrain.terrainData.heightmapWidth/2;
-		height= (int)terrain.terrainData.heightmapHeight/2;
+		width = (int)terrain.terrainData.heightmapWidth/factor;
+		height= (int)terrain.terrainData.heightmapHeight/factor;
 		
 
 		textureMap = new Texture2D(width, height);
@@ -87,9 +90,9 @@ public class DungeonGenerator : MonoBehaviour {
 			for (int j=0; j< height; j++){
 
 				if ((map[i,j].cellKind == MapCell.CellKind.WALL && map[i,j].isBorder )|| map[i,j].cellKind == MapCell.CellKind.UNUSED){
-					heights = upAWall(i,j,2,0.02f,heights);
+					heights = upAWall(i,j,factor,this.wallheight,heights);
 				}else{
-					heights = upAWall(i,j,2,0f,heights);
+					heights = upAWall(i,j,factor,0f,heights);
 				}
 			}
 		}
