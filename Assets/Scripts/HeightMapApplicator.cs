@@ -4,7 +4,10 @@ using System.Collections;
 public class HeightMapApplicator : MonoBehaviour {
 
 	// TODO crear un evento y pasarle en él el factor y el mapa de celdas al pintor
-	//TODO meter al jugador.
+
+
+	public delegate void TerrainGenerated(Door d);
+	public static event TerrainGenerated OnTerrainGenerated;
 
 	private Terrain terrain;
 	public float factor;
@@ -15,14 +18,11 @@ public class HeightMapApplicator : MonoBehaviour {
 		DungeonGenerator.OnMapCreated += apply;
 	}
 
-	protected void apply(MapCell[,] map){
+	protected void apply(MapCell[,] map,Door door){
 		terrain = this.gameObject.GetComponent<Terrain> ();
 		float[,] heights = terrain.terrainData.GetHeights (0, 0, terrain.terrainData.heightmapWidth, terrain.terrainData.heightmapWidth);
-		//Debug.Log ("Dimensiones dungeon:" + map.GetLength (0) + "x" + map.GetLength (1));
-		//Debug.Log ("Dimensiones heightMap:" + heights.GetLength (0) + "x" + heights.GetLength (1));
-		//Debug.Log ("Factor:" + factor);
 		applyCellMap (heights,map);
-
+		callPlayerCreator (door);
 	}
 
 	void applyCellMap(float[,] heights , MapCell[,]map){
@@ -37,7 +37,7 @@ public class HeightMapApplicator : MonoBehaviour {
 	}
 
 	float getSuitableHeightFromMap(MapCell[,] map, int indexX, int indexY){
-		//Debug.Log ("x:" + indexX + "y:" + indexY);
+
 		indexX = Mathf.Clamp (indexX, 0, map.GetLength(0)-1);
 		indexY = Mathf.Clamp (indexY, 0, map.GetLength(1)-1);
 		if (map[indexX,indexY].isBorder || map[indexX,indexY].cellKind == MapCell.CellKind.WALL || map[indexX,indexY].cellKind == MapCell.CellKind.UNUSED)
@@ -46,7 +46,10 @@ public class HeightMapApplicator : MonoBehaviour {
 			return 0f;
 	}
 
-
+	void callPlayerCreator(Door d){
+		if (OnTerrainGenerated != null)
+			OnTerrainGenerated (d);
+	}
 
 	void OnDisable(){
 		DungeonGenerator.OnMapCreated -= apply;
