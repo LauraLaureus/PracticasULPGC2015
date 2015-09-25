@@ -5,16 +5,13 @@ using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
 
-	public delegate void MapGenerated(Door d);
+	public delegate void MapGenerated(MapCell[,] map);
 	public static event MapGenerated OnMapCreated;
-
-	public int factor;
-	public float wallheight;
-
+	
 	Terrain terrain;
 	
-	int width;
-	int height;
+	public int width;
+	public int height;
 	
 	Texture2D textureMap;
 	
@@ -25,10 +22,7 @@ public class DungeonGenerator : MonoBehaviour {
 
 	void Start () {
 		terrain = this.gameObject.GetComponent<Terrain>();
-		width = (int)terrain.terrainData.heightmapWidth/factor;
-		height= (int)terrain.terrainData.heightmapHeight/factor;
-		
-
+	
 		textureMap = new Texture2D(width, height);
 		textureMap.filterMode = FilterMode.Point;
 		
@@ -46,17 +40,20 @@ public class DungeonGenerator : MonoBehaviour {
 			miners.Add (miner);
 		}
 		DigMap();
+
 		ShowMap ();
 		CreatePlayer ();
 	
 	}
+
+
 
 	void CreatePlayer(){
 
 		Door selectedDoor = selectDoor ();
 		selectedDoor.translateInto(width,height);
 		if (OnMapCreated != null)
-			OnMapCreated (selectedDoor);
+			OnMapCreated (map);
 	}
 
 
@@ -82,9 +79,9 @@ public class DungeonGenerator : MonoBehaviour {
 	
 	void ShowMap() {
 		textureMap.Apply();
+		/*
 		
-		
-		float[,] heights = new float[width*2,height*2];
+		float[,] heights = new float[width*factor,height*factor];
 		
 		for (int i = 0; i < width; i++){
 			for (int j=0; j< height; j++){
@@ -98,33 +95,45 @@ public class DungeonGenerator : MonoBehaviour {
 		}
 		
 		terrain.terrainData.SetHeights (0, 0, heights);
-		
+		*/
 	}
-
+	/*
 	float[,] upAWall(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
-		int diagonalPoint = rate;
-		while (diagonalPoint > 0) {
-			heightMap = upPointsInHorizontal( indexX, indexY, rate, wallHeight, heightMap);
-			heightMap = upPointsInVertical(indexX,indexY,rate, wallHeight, heightMap);
-			diagonalPoint -=1;
+		int diagonalPoint = 0;
+		while (diagonalPoint < rate) {
+			heightMap = upPointsInHorizontal( indexX+diagonalPoint, indexY+diagonalPoint, rate, wallHeight, heightMap);
+			heightMap = upPointsInVertical(indexX+diagonalPoint,indexY+diagonalPoint,rate, wallHeight, heightMap);
+			diagonalPoint +=1;
 		}
 		return heightMap;
 	}
 
 	float[,] upPointsInHorizontal(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
 		for (int i = 0; i < rate; i++) {
+			if (rate*indexX+i >= heightMap.GetLength(0)) break;
 			heightMap[rate*indexX+i,rate*indexY] = wallHeight;
+			
 		}
+
+		int i = 0;
+		while((rate*indexX+i < heightMap.GetLength(0)) && (rate*indexY < heightMap.GetLength(1))){
+			heightMap[rate*indexX+i,rate*indexY] = wallHeight;
+			i+=1;
+		}
+
 		return heightMap;
 	}
 
 	float[,] upPointsInVertical(int indexX,int indexY,int rate, float wallHeight, float[,] heightMap){
-		for (int i = 0; i < rate; i++) {
+
+		int i = 0;
+		while ((rate*indexY+i < heightMap.GetLength(1)) && (rate*indexX < heightMap.GetLength(0))) {
 			heightMap[rate*indexX,rate*indexY+i] = wallHeight;
+			i +=1;
 		}
 		return heightMap;
 
-	}
+	}*/
 
 	void CleanMap () { //Zonas no pisables
 		List<int[]> checkList = new List<int[]>();

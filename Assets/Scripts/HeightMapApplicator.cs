@@ -3,32 +3,41 @@ using System.Collections;
 
 public class HeightMapApplicator : MonoBehaviour {
 
-	public Terrain terrain;
+	// TODO crear un evento y pasarle en él el factor y el mapa de celdas al pintor
 
+	private Terrain terrain;
+	public int factor;
+	public float wallheight;
 
-	// Use this for initialization
-	void Start () {
-		int width = (int)terrain.terrainData.heightmapWidth;
-		int height = (int)terrain.terrainData.heightmapHeight;
-		float[,] heights = new float[width,height];
-		for (var j = 0; j < width; j++) {
-			for (var i = 0; i < height; i++) {
-				//heights [j, i] = Random.Range (0.0f, 1.0f);
-				//heights [j, i] = (float)(j*i) /(513f*513f);
-				heights[j,i] = 0.0f;
+	void OnEnable(){
+		DungeonGenerator.OnMapCreated += apply;
+	}
+
+	protected void apply(MapCell[,] map){
+		float[,] heights = setUpBounds (map.GetLength (0), map.GetLength (1));
+		applyMap (heights, map);
+
+	}
+
+	float[,] setUpBounds(int width,int lenght){
+		terrain = this.gameObject.GetComponent<Terrain>();
+		terrain.terrainData.size = new Vector3 (width*factor /16f, terrain.terrainData.size.z,lenght*factor/ 16f);
+		return new float[ width * factor, lenght * factor];
+	}
+
+	void applyMap(float[,]heights, MapCell[,] map){
+		for (int i = 0; i < heights.GetLength(0); i++) {
+			for (int j =0; j <heights.GetLength(0); j++){
+				heights[i,j] = 0f;
 			}
 		}
-		heights [0, 0] = 1.0f;
-		heights [1, 0] = 1.0f;
-		heights [0, 1] = 1.0f;
-		heights [1, 1] = 1.0f;
 		terrain.terrainData.SetHeights (0,0,heights);
 	}
 
+	void OnDisable(){
+		DungeonGenerator.OnMapCreated -= apply;
 
-	// Update is called once per frame
-	void Update () {
-	
 	}
+
 }
  

@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PlayerCreator : MonoBehaviour {
-
+	/*
 	public GameObject playerPrefab;
 	public CameraController cameraController;
 
@@ -20,5 +20,5 @@ public class PlayerCreator : MonoBehaviour {
 	
 	protected void OnDisable(){
 		DungeonGenerator.OnMapCreated -= this.CreatePlayer;
-	}
+	}*/
 }

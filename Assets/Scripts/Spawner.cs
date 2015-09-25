@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Spawner : MonoBehaviour {
-
+	/*
 	protected void OnEnable (){
 		DungeonGenerator.OnMapCreated += this.CreateUnit;
 	}
@@ -13,5 +13,5 @@ public class Spawner : MonoBehaviour {
 
 	protected void OnDisable(){
 		DungeonGenerator.OnMapCreated -= this.CreateUnit;
-	}
+	}*/
 }
