@@ -2,15 +2,15 @@
 using System.Collections;
 
 public class PlayerCreator : MonoBehaviour {
-	/*
+
 	public GameObject playerPrefab;
 	public CameraController cameraController;
 
-	protected void OnEnable (){
+	/*protected void OnEnable (){
 		DungeonGenerator.OnMapCreated += this.CreatePlayer;
-	}
+	}*/
 	
-	protected void CreatePlayer(Door d){
+	public void CreatePlayer(Door d){
 		//Instantiate (player);
 
 		GameObject player = (GameObject) GameObject.Instantiate (playerPrefab, new Vector3 (d.x_t*512, 1f, d.y_t*512), Quaternion.identity);
@@ -18,7 +18,7 @@ public class PlayerCreator : MonoBehaviour {
 
 	}
 	
-	protected void OnDisable(){
+	/*protected void OnDisable(){
 		DungeonGenerator.OnMapCreated -= this.CreatePlayer;
 	}*/
 }
