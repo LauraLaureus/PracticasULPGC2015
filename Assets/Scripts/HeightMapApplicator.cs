@@ -19,6 +19,7 @@ public class HeightMapApplicator : MonoBehaviour {
 	}
 
 	protected void apply(MapCell[,] map,Door door){
+
 		terrain = this.gameObject.GetComponent<Terrain> ();
 		float[,] heights = terrain.terrainData.GetHeights (0, 0, terrain.terrainData.heightmapWidth, terrain.terrainData.heightmapWidth);
 		applyCellMap (heights,map);
@@ -47,6 +48,8 @@ public class HeightMapApplicator : MonoBehaviour {
 	}
 
 	void callPlayerCreator(Door d){
+		d.x_t *= terrain.terrainData.heightmapWidth;
+		d.y_t *= terrain.terrainData.heightmapHeight;
 		if (OnTerrainGenerated != null)
 			OnTerrainGenerated (d);
 	}

@@ -39,18 +39,26 @@ public class DungeonGenerator : MonoBehaviour {
 		DigMap();
 
 		ShowMap ();
+		//showDoors ();
 		ToolChain ();
 	
 	}
+	/*
+	void showDoors(){
+		foreach( Door d in doors){
+			Debug.Log ("Puerta:" + d.x + " " + d.y);
+		}
+
+	}*/
 
 
 
 	void ToolChain(){
-
-		Door selectedDoor = selectDoor ();
-		selectedDoor.translateInto(width,height);
+		Door selected = selectDoor ();
+		selected.translateInto (width, height);
+		Debug.Log ("Puerta:" + selected.x + " " + selected.y);
 		if (OnMapCreated != null)
-			OnMapCreated (map,selectDoor());
+			OnMapCreated (map,selected);
 	}
 
 
