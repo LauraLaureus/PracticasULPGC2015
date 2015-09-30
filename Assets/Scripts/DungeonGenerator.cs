@@ -66,6 +66,8 @@ public class DungeonGenerator : MonoBehaviour {
 	Door selectDoor(){
 		int index = (int) Random.value * doors.Count;
 		return doors [index];
+
+
 	}
 	
 	void DigMap() {
@@ -354,10 +356,11 @@ public class DungeonGenerator : MonoBehaviour {
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.R))
 			Application.LoadLevel("DungeonTest");
+
 	}
 	
 	
 }
 
 
-		
+

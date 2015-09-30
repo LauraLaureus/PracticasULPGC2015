@@ -41,15 +41,17 @@ public class HeightMapApplicator : MonoBehaviour {
 
 		indexX = Mathf.Clamp (indexX, 0, map.GetLength(0)-1);
 		indexY = Mathf.Clamp (indexY, 0, map.GetLength(1)-1);
-		if (map[indexX,indexY].isBorder || map[indexX,indexY].cellKind == MapCell.CellKind.WALL || map[indexX,indexY].cellKind == MapCell.CellKind.UNUSED)
-			return wallheight;
-		else
+		if (map[indexX,indexY].cellKind == MapCell.CellKind.WALKABLE && !map[indexX,indexY].isBorder )
 			return 0f;
+		else
+			return wallheight;
 	}
 
 	void callPlayerCreator(Door d){
+		Debug.Log ("Puerta:" + d.x_t + " " + d.y_t);
 		d.x_t *= terrain.terrainData.heightmapWidth;
 		d.y_t *= terrain.terrainData.heightmapHeight;
+		Debug.Log ("Puerta:" + d.x_t + " " + d.y_t);
 		if (OnTerrainGenerated != null)
 			OnTerrainGenerated (d);
 	}

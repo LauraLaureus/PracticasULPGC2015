@@ -11,8 +11,8 @@ public class PlayerCreator : MonoBehaviour {
 	}
 	
 	public void CreatePlayer(Door d){
-		Instantiate (playerPrefab);
-		GameObject player = (GameObject) GameObject.Instantiate (playerPrefab, new Vector3 (d.x_t, 1f, d.y_t), Quaternion.identity);
+		//Instantiate (playerPrefab);
+		GameObject player = (GameObject) GameObject.Instantiate (playerPrefab, new Vector3 (d.y_t, 1f, d.x_t), Quaternion.identity);
 		cameraController.setPlayer (player);
 
 	}
