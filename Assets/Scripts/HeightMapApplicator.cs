@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
+
 using System.Collections;
 
 public class HeightMapApplicator : MonoBehaviour {
 
-	// TODO crear un evento y pasarle en él el factor y el mapa de celdas al pintor
-
-
 	public delegate void TerrainGenerated(Door d);
 	public static event TerrainGenerated OnTerrainGenerated;
+
+
 
 	private Terrain terrain;
 	public float factor;
 	public float wallheight;
-	public PlayerCreator creator;
+
 
 	void OnEnable(){
 		DungeonGenerator.OnMapCreated += apply;
@@ -55,6 +55,7 @@ public class HeightMapApplicator : MonoBehaviour {
 		if (OnTerrainGenerated != null)
 			OnTerrainGenerated (d);
 	}
+	
 
 	void OnDisable(){
 		DungeonGenerator.OnMapCreated -= apply;

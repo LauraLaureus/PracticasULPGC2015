@@ -7,6 +7,9 @@ public class DungeonGenerator : MonoBehaviour {
 
 	public delegate void MapGenerated(MapCell[,] map, Door doors);
 	public static event MapGenerated OnMapCreated;
+
+	public delegate void MapGeneratedForIAs(List<Door> ds, int w,int h);
+	public static event MapGeneratedForIAs OnLiveNeeded;
 	
 	public int width;
 	public int height;
@@ -56,9 +59,14 @@ public class DungeonGenerator : MonoBehaviour {
 	void ToolChain(){
 		Door selected = selectDoor ();
 		selected.translateInto (width, height);
-		Debug.Log ("Puerta:" + selected.x + " " + selected.y);
+		//Debug.Log ("Puerta:" + selected.x + " " + selected.y);
+
+
 		if (OnMapCreated != null)
 			OnMapCreated (map,selected);
+		doors.Remove (selected);
+		if (OnLiveNeeded != null)
+			OnLiveNeeded (doors, width, height);
 	}
 
 
