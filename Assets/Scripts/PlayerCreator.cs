@@ -4,16 +4,19 @@ using System.Collections;
 public class PlayerCreator : MonoBehaviour {
 
 	public GameObject playerPrefab;
-	public CameraController cameraController;
+
+	public delegate void PlayerCreated(GameObject player); 
+	public static event PlayerCreated OnPlayerCreated;
 
 	protected void OnEnable (){
 		HeightMapApplicator.OnTerrainGenerated += this.CreatePlayer;
 	}
 	
 	public void CreatePlayer(Door d){
-		//Instantiate (playerPrefab);
+
 		GameObject player = (GameObject) GameObject.Instantiate (playerPrefab, new Vector3 (d.y_t, 1f, d.x_t), Quaternion.identity);
-		cameraController.setPlayer (player);
+		if (OnPlayerCreated != null)
+			OnPlayerCreated (player);
 
 	}
 	

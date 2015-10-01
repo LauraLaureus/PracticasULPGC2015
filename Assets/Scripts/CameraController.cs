@@ -6,9 +6,12 @@ public class CameraController : MonoBehaviour {
 	private GameObject player;
 	private Vector3 offset;
 
-	private float distance = 3;
-	private float height = 3;
+	public float distance = 3; 
+	public float height = 3;
 
+	void OnEnable(){
+		PlayerCreator.OnPlayerCreated += setPlayer;
+	}
 
 	public void setPlayer(GameObject p){
 		this.player = p;
@@ -23,5 +26,9 @@ public class CameraController : MonoBehaviour {
 			transform.position = playerpos + offset;
 			transform.LookAt(player.transform);
 		}
+	}
+
+	void OnDisable(){
+		PlayerCreator.OnPlayerCreated -= setPlayer;
 	}
 }
