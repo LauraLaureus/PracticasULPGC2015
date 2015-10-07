@@ -6,49 +6,32 @@ public class RandomIA : MonoBehaviour {
 	// Use this for initialization
 	Rigidbody rb;
 	NavMeshAgent navMesh;
-	Vector3 finalPosition;
-	bool destinationReached = true;
 
-	public float walkRadius = 10;
-	int frames_forTimeOut = 1000;
 	
 	void Start () {
 		rb = GetComponent<Rigidbody>();
 		navMesh = GetComponent<NavMeshAgent>();
 	}
-	
+
+	//TODO moverse aleatoriamente y simular saltar.
 	// Update is called once per frame
 	void Update () {
+		if (!navMesh.hasPath){
+			Debug.Log("New Path");
+			Vector3 randomDirection = Random.insideUnitSphere * 2;
+			randomDirection += transform.position;
+			NavMeshHit hit;
+			NavMesh.SamplePosition(randomDirection, out hit, 2, 1);
+			Vector3 finalPosition = hit.position;
+			navMesh.SetDestination(finalPosition);
+			
+		}
 
-		if (destinationReached) {
-			newDestination();
-		} else {
-			if (frames_forTimeOut == 0){
-				destinationReached = true;
-				frames_forTimeOut = 1000;
-			}else{
-				frames_forTimeOut -=1;
-			}
-		} 
+		Vector3 nextCorner = navMesh.steeringTarget; //steeringTarget es un punto entre el punto actual y el destino o el destino.
+		rb.MovePosition (Vector3.MoveTowards (transform.position, nextCorner, navMesh.speed));
 
-		this.transform.position = newPosition();
-		rb.MovePosition(this.transform.position);
-		if (this.transform.position == finalPosition)
-			destinationReached = true;
 	}
 
-	void newDestination(){
-		Vector3 randomDirection = Random.insideUnitSphere * walkRadius;
-		randomDirection += transform.position;
-		NavMeshHit hit;
-		NavMesh.SamplePosition (randomDirection, out hit, walkRadius, 1);
-		finalPosition = hit.position;
-		destinationReached = false;
-	}
 
-	Vector3 newPosition(){
-		Vector3 control = Vector3.MoveTowards (transform.position, finalPosition, navMesh.speed);
-		return control;
-	}
 	
 }
