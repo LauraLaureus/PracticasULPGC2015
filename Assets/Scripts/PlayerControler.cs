@@ -5,18 +5,30 @@ public class PlayerControler : MonoBehaviour {
 	private Rigidbody rb;
 	public float rotationX;
 	public float playerSpeed;
+    private Quaternion targetRotation;
+    private float forwardInput, turnAroundInput;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
+        targetRotation = transform.rotation;
+        forwardInput = turnAroundInput = 0;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 
-		this.transform.eulerAngles = this.transform.eulerAngles + new Vector3(0f, Input.GetAxis("Horizontal")*rotationX,0f);
-		//this.transform.position =  this.transform.position + Input.GetAxis ("Vertical") * transform.forward;
-		rb.velocity = Input.GetAxis ("Vertical") * transform.forward * playerSpeed;
+        forwardInput = Input.GetAxis("Vertical");
+        turnAroundInput = Input.GetAxis("Mouse X");
+
+        rb.velocity = transform.forward * forwardInput * playerSpeed;
+        targetRotation *= Quaternion.AngleAxis(rotationX * turnAroundInput, Vector3.up);
+        transform.rotation = targetRotation;
 	}
+
+    public Quaternion GetRotation()
+    {
+        return targetRotation;
+    }
 
 }
