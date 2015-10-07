@@ -22,9 +22,8 @@ public class CameraController : MonoBehaviour {
 	void LateUpdate () {
 		if (player != null) {
 			Vector3 playerpos = player.transform.position;
-			Vector3 offset = -player.transform.forward*distance + player.transform.up*height;
-			transform.position = playerpos + offset;
-			transform.LookAt(player.transform);
+            transform.position = playerpos;
+            transform.LookAt(player.transform);
 		}
 	}
 
