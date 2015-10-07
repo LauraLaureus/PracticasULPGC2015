@@ -20,7 +20,7 @@ public class SpawnIA : MonoBehaviour {
 		Door d = selectDoor ();
 		d.translateInto (w, h);
 
-		GameObject.Instantiate (prefab, new Vector3 (512*d.y_t, 1f, 512*d.x_t), Quaternion.identity);
+		GameObject.Instantiate (prefab, new Vector3 (512*d.y_t, 0.5f, 512*d.x_t), Quaternion.identity);
 	}
 
 	Door selectDoor(){
