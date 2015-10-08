@@ -26,11 +26,14 @@ public class TerrainPainter : MonoBehaviour
         splatFloorWeights[0] = 1f;
         splatFloorWeights[1] = 0f;
 
+        int indexXmap, indexYmap;
         for (int i = 0; i < splatmapData.GetLength(0); i++)
         {
             for (int j = 0; j < splatmapData.GetLength(1); j++)
             {
-                if (map[i / factor, j / factor].cellKind == MapCell.CellKind.WALL || map[i / factor, j / factor].cellKind == MapCell.CellKind.UNUSED)
+                indexXmap = Mathf.Clamp(i/factor, 0, map.GetLength(0) - 1);
+                indexYmap = Mathf.Clamp(j/factor, 0, map.GetLength(0) - 1);
+                if (map[indexXmap, indexYmap].cellKind == MapCell.CellKind.WALL || map[indexXmap, indexYmap].cellKind == MapCell.CellKind.UNUSED)
                 {
                     splatmapData = setSplatWeights(i, j, splatWallWeights, splatmapData);
                 }

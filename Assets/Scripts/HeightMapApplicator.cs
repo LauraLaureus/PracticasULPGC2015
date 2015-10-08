@@ -30,21 +30,25 @@ public class HeightMapApplicator : MonoBehaviour {
 	
 		for (int i = 0; i < heights.GetLength(0); i++) {
 			for(int j = 0; j < heights.GetLength(1); j++){
-				heights[i,j] = getSuitableHeightFromMap(map,(int)(i/factor),(int)(j/factor));
+				heights[i,j] = getSuitableHeightFromMap(map,i,j, heights);
 			}
 		}
 
 		terrain.terrainData.SetHeights (0, 0, heights);
 	}
 
-	float getSuitableHeightFromMap(MapCell[,] map, int indexX, int indexY){
+	float getSuitableHeightFromMap(MapCell[,] map, int indexX, int indexY, float[,] heights){
 
-		indexX = Mathf.Clamp (indexX, 0, map.GetLength(0)-1);
-		indexY = Mathf.Clamp (indexY, 0, map.GetLength(1)-1);
-		if (map[indexX,indexY].cellKind == MapCell.CellKind.WALKABLE && !map[indexX,indexY].isBorder )
-			return 0f;
-		else
-			return wallheight;
+		int indexXmap = Mathf.Clamp ((int)(indexX / factor), 0, map.GetLength(0)-1);
+		int indexYmap = Mathf.Clamp ((int)(indexY / factor), 0, map.GetLength(1)-1);
+        if (map[indexXmap, indexYmap].cellKind == MapCell.CellKind.WALKABLE && !map[indexXmap, indexYmap].isBorder)
+            return 0f;
+
+        else if (indexX > 0 && heights[indexX - 1, indexY] < wallheight)
+            return heights[indexX - 1, indexY] + wallheight/factor;
+        
+        else
+            return wallheight;
 	}
 
 	void callPlayerCreator(Door d){
