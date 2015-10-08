@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerControler : MonoBehaviour {
 	private Rigidbody rb;
-	public float rotationX;
-	public float playerSpeed;
+	public float rotationX = 5;
+	public float playerSpeed = 5;
     private Quaternion targetRotation;
     private float forwardInput, turnAroundInput;
 

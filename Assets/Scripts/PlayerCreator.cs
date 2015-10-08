@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerCreator : MonoBehaviour {
 
-	public GameObject player;
+	public GameObject playerPrefab;
 
 	public delegate void PlayerCreated(GameObject player); 
 	public static event PlayerCreated OnPlayerCreated;
@@ -13,8 +13,7 @@ public class PlayerCreator : MonoBehaviour {
 	}
 	
 	public void CreatePlayer(Door d){
-
-        player.transform.position = new Vector3(d.y_t, 1f, d.x_t);
+        GameObject player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector3(d.y_t, 1f, d.x_t), Quaternion.identity);
         if (OnPlayerCreated != null)
 			OnPlayerCreated (player);
 

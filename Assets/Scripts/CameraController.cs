@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-    public float rotationX;
+    public float rotationX = 5;
     private GameObject player;
     private float turnUpInput;
     private Quaternion targetRotation;
