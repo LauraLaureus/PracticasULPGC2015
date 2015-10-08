@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
         turnUpInput = Input.GetAxis("Mouse Y");
-
+        targetRotation = transform.rotation;
         targetRotation *= Quaternion.AngleAxis(rotationX * turnUpInput, Vector3.left);
 
         transform.rotation = targetRotation;
