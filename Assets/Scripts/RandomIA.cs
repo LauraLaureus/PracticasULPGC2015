@@ -5,7 +5,8 @@ public class RandomIA : MonoBehaviour {
 
 	public enum State{
 		Moving,
-		Resting
+		Resting,
+		Evaluating
 	}
 
 	// Use this for initialization
@@ -14,11 +15,12 @@ public class RandomIA : MonoBehaviour {
 
 	public State state;
 	public float maxTimeForResting=10; 
+	public float fatigue = 0;
 
 	void Start () {
 		rb = GetComponent<Rigidbody>();
 		navMesh = GetComponent<NavMeshAgent>();
-		state = State.Resting;
+		state = State.Evaluating;
 		StartCoroutine (FSM ());
 	}
 
@@ -35,6 +37,8 @@ public class RandomIA : MonoBehaviour {
 		Vector3 finalPosition = hit.position;
 		navMesh.SetDestination(finalPosition);
 
+		fatigue +=Mathf.Abs( Vector3.Distance (finalPosition, transform.position));
+
 		Vector3 deltaRigidBody = Vector3.one;
 		while (deltaRigidBody != Vector3.zero) {
 			deltaRigidBody = rb.position;
@@ -43,8 +47,8 @@ public class RandomIA : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 			deltaRigidBody -= rb.position;
 		}
-		Debug.Log ("Ya llegué a mi destino, pero me voy a echar un rato.");
-		state = State.Resting;
+		Debug.Log ("Ya llegué a mi destino");
+		state = State.Evaluating;
 
 	}
 
@@ -57,10 +61,27 @@ public class RandomIA : MonoBehaviour {
 			yield return Time.deltaTime;
 
 		Debug.Log("YA!");
-		state = State.Moving;
+		if (fatigue.Equals (Mathf.Infinity)) {
+			fatigue = s;
+		} else {
+			fatigue -= s;
+		}
+
+		state = State.Evaluating;
 	}
 
+	IEnumerator Evaluating(){
+		if (fatigue < maxTimeForResting) {
+			Debug.Log("Domir es para humanos!!");
+			yield return null;
+			state = State.Moving;
+		} else {
+			yield return null;
+			Debug.Log("Estoy cansado.");
+			state = State.Resting;
+		}
 
+	}
 
 	
 }
