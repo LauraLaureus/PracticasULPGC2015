@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RandomIA : MonoBehaviour {
+public class BunnyIA : MonoBehaviour {
 
 	public enum State{
 		Moving,
@@ -9,17 +9,25 @@ public class RandomIA : MonoBehaviour {
 		Evaluating
 	}
 
+	public enum BunnyMoveTarget{
+		RandomTarget,
+		FoodTarget
+	}
+
 	// Use this for initialization
 	Rigidbody rb;
 	NavMeshAgent navMesh;
 
 	public State state;
+	public BunnyMoveTarget target;
 	public float maxTimeForResting=10; 
 	public float fatigue = 0;
+	public float hunger = 0;
 
 	void Start () {
 		rb = GetComponent<Rigidbody>();
 		navMesh = GetComponent<NavMeshAgent>();
+		target = BunnyMoveTarget.RandomTarget;
 		state = State.Evaluating;
 		StartCoroutine (FSM ());
 	}
@@ -30,14 +38,24 @@ public class RandomIA : MonoBehaviour {
 	}
 
 	IEnumerator Moving(){
-		Vector3 randomDirection = Random.insideUnitSphere * 2;
-		randomDirection += transform.position;
-		NavMeshHit hit;
-		NavMesh.SamplePosition(randomDirection, out hit, 2, 1);
-		Vector3 finalPosition = hit.position;
-		navMesh.SetDestination(finalPosition);
+		Vector3 finalPosition;
+		if (target == BunnyMoveTarget.RandomTarget) {
+			Vector3 randomDirection = Random.insideUnitSphere * 2;
+			randomDirection += transform.position;
+			NavMeshHit hit;
+			NavMesh.SamplePosition (randomDirection, out hit, 2, 1);
+			finalPosition = hit.position;
+			navMesh.SetDestination (finalPosition);
+		} else {
+			navMesh.SetDestination(GameObject.Find("Fruit(Clone)").transform.position);
+			finalPosition = navMesh.steeringTarget;
 
-		fatigue +=Mathf.Abs( Vector3.Distance (finalPosition, transform.position));
+		}
+
+
+		float delta = Mathf.Abs( Vector3.Distance (finalPosition, transform.position));
+		fatigue += delta;
+		hunger += delta / 4;
 
 		Vector3 deltaRigidBody = Vector3.one;
 		while (deltaRigidBody != Vector3.zero) {
@@ -71,17 +89,28 @@ public class RandomIA : MonoBehaviour {
 	}
 
 	IEnumerator Evaluating(){
-		if (fatigue < maxTimeForResting) {
-			Debug.Log("Domir es para humanos!!");
-			yield return null;
+
+		if (fatigue >= maxTimeForResting) {
+			Debug.Log ("Estoy cansado.");
+			state = State.Resting;
+		} else if (hunger >= maxTimeForResting) {
+			Debug.Log ("Voy a buscar comida");
+			target = BunnyMoveTarget.FoodTarget;
 			state = State.Moving;
 		} else {
-			yield return null;
-			Debug.Log("Estoy cansado.");
-			state = State.Resting;
+			Debug.Log("Me voy a dar un garbeo por ahí.");
+			target = BunnyMoveTarget.RandomTarget;
+			state = State.Moving;
+		}
+		yield return null;
+	}
+
+	void OnTriggerEnter(Collider other){
+		if (other.gameObject.name == "Fruit(Clone)") {
+			Debug.Log("Ñam,Ñam que rico");
+			hunger = 0;
+			other.gameObject.SetActive (false);
 		}
 
 	}
-
-	
 }
