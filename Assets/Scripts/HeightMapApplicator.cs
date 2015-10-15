@@ -50,10 +50,9 @@ public class HeightMapApplicator : MonoBehaviour {
 
     private float[,] generateDistanceTransform(float[,] heights)
     {
-        
-        for (int i = 1; i < heights.GetLength(0); i++)
+        for (int i = heights.GetLength(0) - 1; i > 0; i--)
         {
-            for (int j = 1; j < heights.GetLength(1); j++)
+            for (int j = heights.GetLength(1) - 1; j > 0; j--)
             {
 
                 if (heights[j, i] == 0.0f) continue;
@@ -71,16 +70,21 @@ public class HeightMapApplicator : MonoBehaviour {
                     min = heights[j - 1, i];
                 if (min < wallheight)
                     heights[j, i] = min + wallheight * 2 / factor;
+
+                /* comprobación por si acaso supera wallheight
+				if (heights[j,i] > wallheight)
+					heights[j,i] = wallheight;
+				*/
             }
         }
-        
-        for (int i = heights.GetLength(0) - 2; i >= 0; i--)
-        {
-            for (int j = heights.GetLength(1) - 2; j >= 0; j--)
-            {
-                if (heights[j, i] == 0.0f) continue;
 
-                float min = wallheight;
+        for (int i = 0; i < heights.GetLength(0)-1; i++)
+        {
+            for (int j = 0; j < heights.GetLength(1)-1; j++)
+            {
+                if (heights[j, i] == 0) continue;
+
+                float min = heights[j, i];
 
                 for (int x = j - 1; x <= j + 1; x++)
                 {
@@ -95,8 +99,12 @@ public class HeightMapApplicator : MonoBehaviour {
                     min = heights[j, i + 1];
 
 
-                if (min < heights[j,i])
+                if (min < heights[j, i])
                     heights[j, i] = min + wallheight * 2 / factor;
+                /* comprobación por si acaso supera wallheight
+				if (heights[j,i] > wallheight)
+					heights[j,i] = wallheight;
+				*/
             }
         }
         return heights;
