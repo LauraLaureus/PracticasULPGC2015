@@ -11,6 +11,8 @@ public class SpawnAndGrowFruit : MonoBehaviour {
 	//TODO las frutas comidas por las IAs deben mandar un evento con su identificador para eliminarlas de la lista.
 	//TODO si la lista baja de 5 frutas generar más en otras puertas.
 
+
+
 	public enum FruitState
 	{
 		DuplicatePopulation,
@@ -56,7 +58,7 @@ public class SpawnAndGrowFruit : MonoBehaviour {
 			fruitsCreated.Add((GameObject)Instantiate (prefab, position , Quaternion.identity));
 		}
 		yield return new WaitForSeconds(secondsToDuplicate);
-		state = FruitState.RemoveOlds;
+		//state = FruitState.RemoveOlds;
 
 	}
 
@@ -77,6 +79,11 @@ public class SpawnAndGrowFruit : MonoBehaviour {
 		int index = (int) Random.value * doors.Count;
 		return doors [index];
 	}
+
+	public void FruitDestroyed (GameObject fruit){
+		fruitsCreated.Remove(fruit);
+	}
+
 	void OnDisable(){
 		DungeonGenerator.OnLiveNeeded -= generateFruit;
 	}
