@@ -148,28 +148,20 @@ public class BunnyIA : MonoBehaviour {
 	}
 
 	IEnumerator Moving(){
-		/*Vector3 deltaRigidBody = Vector3.one;
+		Vector3 deltaRigidBody = Vector3.one;
 		while (deltaRigidBody != Vector3.zero) {
 			deltaRigidBody = rb.position;
 			Vector3 nextCorner = navMeshAgent.steeringTarget; //steeringTarget es un punto entre el punto actual y el destino o el destino.
-			//rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
-			Vector3 dir = nextCorner - this.transform.forward;
-			rb.velocity = dir.normalized*navMeshAgent.speed;
+			rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
+			//Vector3 dir = nextCorner - this.transform.forward;
+			//rb.velocity = dir.normalized*navMeshAgent.speed;
 			yield return new WaitForEndOfFrame();
 			deltaRigidBody -= rb.position;
 			Debug.Log("delta de RB: "+ Vector3.Magnitude(deltaRigidBody));
 			fatigue += Vector3.Magnitude(deltaRigidBody);
 			hunger += 0.8f*Vector3.Magnitude(deltaRigidBody);
-		}*/
-
-		do {
-			Vector3 nextCorner = navMeshAgent.steeringTarget;
-			//Vector3 dir = nextCorner - this.transform.forward+this.transform.position;
-			//rb.velocity = dir.normalized * navMeshAgent.speed;
-			rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
-			yield return new WaitForEndOfFrame();
-			//fatigue +=Vector3.Magnitude(rb.velocity);
-		} while ( Vector3.Magnitude(rb.velocity)>1);
+		}
+	
 		Debug.Log ("Ya llegué a mi destino");
 		if (fatigue > fatigueBoundary)
 			state = State.Evaluating;
