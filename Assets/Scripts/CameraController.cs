@@ -7,6 +7,12 @@ public class CameraController : MonoBehaviour {
     private GameObject player;
     private float turnUpInput;
     private Quaternion targetRotation;
+    public GameObject arrowPrefab;
+
+    void OnEnable()
+    {
+        PlayerControler.OnArrowShot += shotArrow;
+    }
 
     void Start()
     {
@@ -20,8 +26,18 @@ public class CameraController : MonoBehaviour {
         targetRotation *= Quaternion.AngleAxis(rotationX * turnUpInput, Vector3.left);
 
         transform.rotation = targetRotation;
-        //transform.rotation.ToAngleAxis(rotationX * turnUpInput, Vector3.left);????
 
     }
 
+    void shotArrow(float force)
+    {
+        GameObject arrow = (GameObject) Instantiate(arrowPrefab, transform.position + transform.forward*2, transform.rotation);
+        Rigidbody rbArrow = arrow.GetComponent<Rigidbody>();
+        rbArrow.velocity = transform.forward * force;
+    }
+
+    void OnDisable()
+    {
+        PlayerControler.OnArrowShot += shotArrow;
+    }
 }
