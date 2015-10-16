@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BunnyIA : MonoBehaviour {
 
@@ -7,8 +9,7 @@ public class BunnyIA : MonoBehaviour {
 		Moving,
 		Resting,
 		Evaluating,
-		Eating,
-		Dying
+		Eating
 	}
 
 	public enum BunnyMoveTarget{
@@ -19,15 +20,14 @@ public class BunnyIA : MonoBehaviour {
 	// Use this for initialization
 	Rigidbody rb;
 	NavMeshAgent navMeshAgent;
-	private float birthTime=0;
+
 
 	GameObject food;
 	public float fatigue = 0;	
 	public float hunger =0;
 	public State state;
 	public BunnyMoveTarget target;
-
-	public float lifeTime;
+	
 	public float hungerBoundary;
 	public float fatigueBoundary;
 
@@ -38,8 +38,7 @@ public class BunnyIA : MonoBehaviour {
 		target = BunnyMoveTarget.RandomTarget;
 		state = State.Evaluating;
 		StartCoroutine (FSM ());
-		birthTime = Time.time;
-		lifeTime = 100;
+		food = getClosest (GameObject.FindGameObjectsWithTag ("Fruit"));
 	}
 
 	IEnumerator FSM(){
@@ -49,12 +48,7 @@ public class BunnyIA : MonoBehaviour {
 
 	IEnumerator Evaluating(){
 
-
-		if (Time.time > birthTime+lifeTime) {
-			Debug.Log("Me muero");
-			state = State.Dying;
-		
-		} else if (hunger >= hungerBoundary) {
+		if (hunger >= hungerBoundary) {
 			Debug.Log ("Voy a buscar comida");
 			target = BunnyMoveTarget.FoodTarget;
 			generatePath(target);
@@ -74,19 +68,21 @@ public class BunnyIA : MonoBehaviour {
 	void generatePath(BunnyMoveTarget targt){
 		
 		Vector3 destination;
-		if (targt == BunnyMoveTarget.FoodTarget) {
-			food = getClosest(GameObject.FindGameObjectsWithTag("Fruit"));
-			destination = food.transform.position;
-		} else {
-			destination = getRandomPositionInNavMesh();
-		}
-		navMeshAgent.SetDestination (destination);
+		do {
+			if (targt == BunnyMoveTarget.FoodTarget) {
+				food = getClosest (GameObject.FindGameObjectsWithTag ("Fruit"));
+				destination = food.transform.position;
+			} else {
+				destination = getRandomPositionInNavMesh ();
+			}
+			navMeshAgent.SetDestination (destination);
+			Debug.Log("NavMeshPathStatus: "+ navMeshAgent.path.status);
+		} while(navMeshAgent.path.status != NavMeshPathStatus.PathComplete);
 		
 	}
 
 	GameObject getClosest(GameObject[] list){
 		float[] distances = new float[ list.GetLength(0) ];
-		Debug.Log ("Fruits:" + distances);
 		for (int i = 0; i < list.GetLength(0); i++) {
 			distances[i] = (list[i].transform.position - this.transform.position).sqrMagnitude;
 		}
@@ -96,28 +92,86 @@ public class BunnyIA : MonoBehaviour {
 	
 	
 	Vector3 getRandomPositionInNavMesh(){
-		Vector3 randomDirection = Random.insideUnitSphere * 5;
-		randomDirection += transform.position;
-		NavMeshHit hit;
-		NavMesh.SamplePosition (randomDirection, out hit, 5, 1);
-		return hit.position;
+		List<Vector3> candidates = new List<Vector3>();
+		Vector3[] candidatesArray = candidates.ToArray();
+
+		while (candidates.Count == 0) {
+			candidates = generateNCloseRandomPositions (5);
+
+			/*Vector3 dir = new Vector3(0,1,0);
+			foreach (Vector3 candidate in candidates){
+				Debug.DrawRay(candidate,dir);
+			}*/
+
+			float[] distances = getDistancesToTarget (candidates);
+			NavMeshHit hit;
+
+			Debug.Log("Long lista: " + candidates.Count);
+			for(int i = candidates.Count-1; i >0; i--){
+
+				if(Physics.Raycast(this.transform.position, candidates[i] - this.transform.position, 2)){
+					candidates.Remove(candidates[i]);
+					continue;
+				}
+					
+				//if(!NavMesh.Raycast(this.transform.position, candidates[i],out hit, 1)){
+
+				//}
+				if (!navMeshAgent.Raycast (candidates[i],out hit)|| distances[i] < 2) {
+					candidates.Remove(candidates[i]);
+				}
+			}
+			Debug.Log("Long lista: " + candidates.Count);
+			distances = getDistancesToTarget (candidates);
+
+			candidatesArray = candidates.ToArray();
+			System.Array.Sort(distances,candidatesArray);
+		}
+
+		return candidatesArray[0];
+	}
+
+	List<Vector3> generateNCloseRandomPositions(int n){
+		List<Vector3> result = new List<Vector3>();
+		for (int i = 0; i < n; i++) {
+			result.Add( Random.insideUnitSphere * 5 + transform.position);
+		}
+		return result;
+	}
+
+	float[] getDistancesToTarget(List<Vector3> points){
+		float[] distances = new float[points.Count];
+		for (int i = 0; i < points.Count; i++) {
+			distances [i] = Vector3.Distance(points [i], getClosest(GameObject.FindGameObjectsWithTag("Fruit")).transform.position);
+		}
+		return distances;
 	}
 
 	IEnumerator Moving(){
-		Vector3 deltaRigidBody = Vector3.one;
+		/*Vector3 deltaRigidBody = Vector3.one;
 		while (deltaRigidBody != Vector3.zero) {
 			deltaRigidBody = rb.position;
 			Vector3 nextCorner = navMeshAgent.steeringTarget; //steeringTarget es un punto entre el punto actual y el destino o el destino.
-			rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
+			//rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
+			Vector3 dir = nextCorner - this.transform.forward;
+			rb.velocity = dir.normalized*navMeshAgent.speed;
 			yield return new WaitForEndOfFrame();
 			deltaRigidBody -= rb.position;
+			Debug.Log("delta de RB: "+ Vector3.Magnitude(deltaRigidBody));
 			fatigue += Vector3.Magnitude(deltaRigidBody);
 			hunger += 0.8f*Vector3.Magnitude(deltaRigidBody);
-		}
+		}*/
+
+		do {
+			Vector3 nextCorner = navMeshAgent.steeringTarget;
+			//Vector3 dir = nextCorner - this.transform.forward+this.transform.position;
+			//rb.velocity = dir.normalized * navMeshAgent.speed;
+			rb.MovePosition (Vector3.MoveTowards (rb.position, nextCorner, navMeshAgent.speed*Time.deltaTime));
+			yield return new WaitForEndOfFrame();
+			//fatigue +=Vector3.Magnitude(rb.velocity);
+		} while ( Vector3.Magnitude(rb.velocity)>1);
 		Debug.Log ("Ya llegué a mi destino");
-		if (fatigue >= fatigueBoundary + 5)
-			state = State.Dying;
-		else if (fatigue > fatigueBoundary)
+		if (fatigue > fatigueBoundary)
 			state = State.Evaluating;
 		else if (target == BunnyMoveTarget.FoodTarget && Vector3.Distance (this.transform.position, food.transform.position) < 2)
 			state = State.Eating;
@@ -158,9 +212,6 @@ public class BunnyIA : MonoBehaviour {
 		yield return null;
 	}
 
-	IEnumerator Dying(){
-		DestroyObject (this.gameObject);
-		yield return null;
-	}
+
 
 }
