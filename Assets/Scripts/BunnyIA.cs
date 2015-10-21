@@ -74,14 +74,13 @@ public class BunnyIA : MonoBehaviour {
 		
 		Vector3 destination;
 		do {
-			//if (targt == BunnyMoveTarget.FoodTarget) {
+
 				food = getClosest (GameObject.FindGameObjectsWithTag ("Fruit"));
-			//	destination = food.transform.position;
-			//} else {
+
 				destination = getRandomPositionInNavMesh ();
-			//}
+
 			navMeshAgent.SetDestination (destination);
-			Debug.Log("NavMeshPathStatus: "+ navMeshAgent.path.status);
+			//Debug.Log("NavMeshPathStatus: "+ navMeshAgent.path.status);
 		} while(navMeshAgent.path.status != NavMeshPathStatus.PathComplete);
 		
 	}
@@ -103,15 +102,11 @@ public class BunnyIA : MonoBehaviour {
 		while (candidates.Count == 0) {
 			candidates = generateNCloseRandomPositions (50);
 
-			/*Vector3 dir = new Vector3(0,1,0);
-			foreach (Vector3 candidate in candidates){
-				Debug.DrawRay(candidate,dir);
-			}*/
 
 			float[] distances = getDistancesToTarget (candidates);
 			NavMeshHit hit;
 
-			Debug.Log("Long lista: " + candidates.Count);
+			//Debug.Log("Long lista: " + candidates.Count);
 			for(int i = candidates.Count-1; i >0; i--){
 
 				if(Physics.Raycast(this.transform.position, candidates[i] - this.transform.position, 2)){
@@ -123,7 +118,7 @@ public class BunnyIA : MonoBehaviour {
 					candidates.Remove(candidates[i]);
 				}
 			}
-			Debug.Log("Long lista: " + candidates.Count);
+			//Debug.Log("Long lista: " + candidates.Count);
 			distances = getDistancesToTarget (candidates);
 
 			candidatesArray = candidates.ToArray();
@@ -159,7 +154,7 @@ public class BunnyIA : MonoBehaviour {
 			//rb.velocity = dir.normalized*navMeshAgent.speed;
 			yield return new WaitForEndOfFrame();
 			deltaRigidBody -= rb.position;
-			//Debug.Log("delta de RB: "+ Vector3.Magnitude(deltaRigidBody));
+
 			fatigue += Vector3.Magnitude(deltaRigidBody);
 			hunger += 0.8f*Vector3.Magnitude(deltaRigidBody);
 		}
