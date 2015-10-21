@@ -8,34 +8,16 @@ public class PlayerControler : MonoBehaviour {
     private Quaternion targetRotation;
     private float forwardInput, leftRightInput, turnAroundInput;
 
-    private float loadBow;
     public float maxLoad = 10.0f;
     public float growFactor = 2;
-
-    public delegate void ArrowShot(float force);
-    public static event ArrowShot OnArrowShot;
 
     // Use this for initialization
     void Start () {
 		rb = GetComponent<Rigidbody> ();
         targetRotation = transform.rotation;
         forwardInput = leftRightInput = turnAroundInput = 0;
-        loadBow = 0.0f;
 	}
 	
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0) && loadBow < maxLoad)
-            loadBow += 1 / (float) System.Math.Pow(maxLoad,growFactor);
-
-        else if (Input.GetMouseButtonUp(0) && loadBow > 0.0f)
-        {
-            if (OnArrowShot != null)
-                OnArrowShot(maxLoad);
-            loadBow = 0.0f;
-        }
-        
-    }
 	// Update is called once per frame
 	void FixedUpdate () {
 
