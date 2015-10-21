@@ -47,8 +47,13 @@ public class BunnyIA : MonoBehaviour {
 	}
 
 	IEnumerator Evaluating(){
-
-		if (hunger >= hungerBoundary) {
+		if (hunger >= 10 * hungerBoundary) {
+			Debug.Log("Me muero de hambre");
+			DestroyObject(this.gameObject);
+		}else if(fatigue >= 10*fatigueBoundary){
+			Debug.Log("Me muero de fatiga");
+			DestroyObject(this.gameObject);
+		}else if (hunger >= hungerBoundary) {
 			Debug.Log ("Voy a buscar comida");
 			target = BunnyMoveTarget.FoodTarget;
 			generatePath(target);
@@ -69,12 +74,12 @@ public class BunnyIA : MonoBehaviour {
 		
 		Vector3 destination;
 		do {
-			if (targt == BunnyMoveTarget.FoodTarget) {
+			//if (targt == BunnyMoveTarget.FoodTarget) {
 				food = getClosest (GameObject.FindGameObjectsWithTag ("Fruit"));
-				destination = food.transform.position;
-			} else {
+			//	destination = food.transform.position;
+			//} else {
 				destination = getRandomPositionInNavMesh ();
-			}
+			//}
 			navMeshAgent.SetDestination (destination);
 			Debug.Log("NavMeshPathStatus: "+ navMeshAgent.path.status);
 		} while(navMeshAgent.path.status != NavMeshPathStatus.PathComplete);
@@ -96,7 +101,7 @@ public class BunnyIA : MonoBehaviour {
 		Vector3[] candidatesArray = candidates.ToArray();
 
 		while (candidates.Count == 0) {
-			candidates = generateNCloseRandomPositions (5);
+			candidates = generateNCloseRandomPositions (50);
 
 			/*Vector3 dir = new Vector3(0,1,0);
 			foreach (Vector3 candidate in candidates){
@@ -114,10 +119,7 @@ public class BunnyIA : MonoBehaviour {
 					continue;
 				}
 					
-				//if(!NavMesh.Raycast(this.transform.position, candidates[i],out hit, 1)){
-
-				//}
-				if (!navMeshAgent.Raycast (candidates[i],out hit)|| distances[i] < 2) {
+				if (!navMeshAgent.Raycast (candidates[i],out hit)) {
 					candidates.Remove(candidates[i]);
 				}
 			}
@@ -157,7 +159,7 @@ public class BunnyIA : MonoBehaviour {
 			//rb.velocity = dir.normalized*navMeshAgent.speed;
 			yield return new WaitForEndOfFrame();
 			deltaRigidBody -= rb.position;
-			Debug.Log("delta de RB: "+ Vector3.Magnitude(deltaRigidBody));
+			//Debug.Log("delta de RB: "+ Vector3.Magnitude(deltaRigidBody));
 			fatigue += Vector3.Magnitude(deltaRigidBody);
 			hunger += 0.8f*Vector3.Magnitude(deltaRigidBody);
 		}
@@ -195,7 +197,7 @@ public class BunnyIA : MonoBehaviour {
 		if (food != null) {
 			Debug.Log ("Ñam, ñam");
 			food.GetComponent<FruitBehaviour>().eaten();
-			hunger -= 10;
+			hunger /= 2;
 			food = null;
 
 		}
@@ -204,6 +206,10 @@ public class BunnyIA : MonoBehaviour {
 		yield return null;
 	}
 
-
+	void OnTriggerEnter(Collider other){
+		if (other.gameObject.tag == "Fruit" ) {
+			state = State.Eating;
+		}
+	}
 
 }
