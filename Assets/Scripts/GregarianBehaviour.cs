@@ -8,9 +8,11 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Vector3 aligment = Vector3.zero;
 	private Vector3 navigation = Vector3.zero;
 
-	public float w_separation = 1;
+	public float w_separation = 0.8f;
+	public float w_navigation = 0.5f;
 	public float w_cohesion = 1;
 	private float w_aligment = 1;
+
 
 	private Rigidbody rb;
 	public NavMeshAgent navMeshAgent;
@@ -33,7 +35,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		//cohesion = calculateCohesionVector (hits);
 		//aligment = calculateAligmentVector(hits);
 
-		Vector3 steeringForce = separation * w_separation ;
+		Vector3 steeringForce = separation * w_separation + navigation * w_navigation + 0.001f*randomVector();
 
 		rb.velocity = steeringForce.normalized * navMeshAgent.speed;
 		Debug.DrawLine (this.transform.position, this.transform.position + rb.velocity);
@@ -50,7 +52,7 @@ public class GregarianBehaviour : MonoBehaviour {
 			if (h.collider.gameObject.tag == "Gregarian"){
 
 				Vector3 toGregarian = this.transform.position - h.collider.gameObject.transform.position;
-				float towardsMateWeight = toGregarian.magnitude > 0? 1.0f / toGregarian.magnitude : 0.001f;
+				float towardsMateWeight = toGregarian.magnitude > 0? 1.0f / (toGregarian.magnitude * 0.1f) : 0.001f;
 				result += toGregarian.normalized * towardsMateWeight;
 			}
 		}
@@ -78,6 +80,10 @@ public class GregarianBehaviour : MonoBehaviour {
 	Vector3 calculateNavigationVector(){
 		Vector3 result = this.navMeshAgent.steeringTarget;
 		Debug.DrawLine (this.transform.position,result);
-		return result;
+		return result - this.transform.position;
+	}
+
+	Vector3 randomVector(){
+		return this.transform.position + this.transform.forward * 3 + Random.insideUnitSphere * 3;
 	}
 }
