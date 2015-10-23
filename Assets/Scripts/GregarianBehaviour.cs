@@ -8,8 +8,8 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Vector3 aligment = Vector3.zero;
 	private Vector3 navigation = Vector3.zero;
 
-	public float w_separation = 0.8f;
-	public float w_navigation = 0.5f;
+	public float w_separation = 0.1f;
+	public float w_navigation = 0.9f;
 	public float w_cohesion = 1;
 	private float w_aligment = 1;
 
