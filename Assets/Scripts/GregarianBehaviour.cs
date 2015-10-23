@@ -6,13 +6,16 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Vector3 separation = Vector3.zero;
 	private Vector3 cohesion = Vector3.zero;
 	private Vector3 aligment = Vector3.zero;
+	private Vector3 navigation = Vector3.zero;
 
 	public float w_separation = 1;
 	public float w_cohesion = 1;
 	private float w_aligment = 1;
 
 	private Rigidbody rb;
-	private NavMeshAgent navMeshAgent;
+	public NavMeshAgent navMeshAgent;
+
+
 
 	//Aquí para hacer la FSM 
 	void Start () {
@@ -25,15 +28,16 @@ public class GregarianBehaviour : MonoBehaviour {
 	
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
 
+		navigation = calculateNavigationVector ();
 		separation = calculateSeparationVector (hits);
-		cohesion = calculateCohesionVector (hits);
+		//cohesion = calculateCohesionVector (hits);
 		//aligment = calculateAligmentVector(hits);
 
-		Vector3 steeringForce = separation * w_separation + cohesion * w_cohesion;
+		Vector3 steeringForce = separation * w_separation ;
 
-		rb.velocity = steeringForce.normalized;
+		rb.velocity = steeringForce.normalized * navMeshAgent.speed;
+		Debug.DrawLine (this.transform.position, this.transform.position + rb.velocity);
 
-		//rb.AddForce (steeringForce.normalized * navMeshAgent.speed);
 	}
 
 	Vector3 calculateSeparationVector(RaycastHit [] hits){
@@ -46,11 +50,12 @@ public class GregarianBehaviour : MonoBehaviour {
 			if (h.collider.gameObject.tag == "Gregarian"){
 
 				Vector3 toGregarian = this.transform.position - h.collider.gameObject.transform.position;
-				//Vector3 toGregarian = h.collider.gameObject.transform.position -this.transform.position;
-				result += toGregarian.normalized/Vector3.Distance(this.transform.position,h.collider.gameObject.transform.position);
+				float towardsMateWeight = toGregarian.magnitude > 0? 1.0f / toGregarian.magnitude : 0.001f;
+				result += toGregarian.normalized * towardsMateWeight;
 			}
 		}
-		Debug.Log (result);
+		Debug.DrawLine (this.transform.position,this.transform.position+result);
+		//Debug.Log (result);
 		return result;
 	}
 
@@ -68,5 +73,11 @@ public class GregarianBehaviour : MonoBehaviour {
 		}
 
 		return result/count;
+	}
+
+	Vector3 calculateNavigationVector(){
+		Vector3 result = this.navMeshAgent.steeringTarget;
+		Debug.DrawLine (this.transform.position,result);
+		return result;
 	}
 }
