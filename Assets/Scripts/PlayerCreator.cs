@@ -14,6 +14,7 @@ public class PlayerCreator : MonoBehaviour {
 	
 	public void CreatePlayer(Door d){
         GameObject player = (GameObject)GameObject.Instantiate(playerPrefab, new Vector3(d.y_t, 1f, d.x_t), Quaternion.identity);
+        player.name = "FPS Player";
         if (OnPlayerCreated != null)
 			OnPlayerCreated (player);
 
