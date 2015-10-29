@@ -8,21 +8,28 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Vector3 aligment = Vector3.zero;
 	private Vector3 navigation = Vector3.zero;
 
-	public float w_separation = 0.1f;
-	public float w_navigation = 0.9f;
-	public float w_cohesion = 1;
-	private float w_aligment = 1;
+	public float w_separation;
+	public float w_navigation;
+	public float w_inercia;
+	public float w_cohesion;
+	public float w_aligment = 1;
 
 
 	private Rigidbody rb;
 	public NavMeshAgent navMeshAgent;
-
+	private Vector3 steeringForce;
 
 
 	//Aquí para hacer la FSM 
 	void Start () {
+		w_separation = 2f;
+		w_navigation = 3f;
+		w_inercia = 1f;
+		w_cohesion = 1f;
+		w_aligment = 1f;
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
+		steeringForce = Vector3.zero;
 	}
 	
 	// Update is called once per frame
@@ -30,22 +37,26 @@ public class GregarianBehaviour : MonoBehaviour {
 	
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
 
-		navigation = calculateNavigationVector ();
-		separation = calculateSeparationVector (hits);
-		//cohesion = calculateCohesionVector (hits);
-		//aligment = calculateAligmentVector(hits);
 
-		Vector3 steeringForce = separation * w_separation + navigation * w_navigation + 0.001f*randomVector();
+		steeringForce += w_inercia * steeringForce;
+		Debug.DrawLine (this.transform.position,this.transform.position+steeringForce, Color.green);
+		//Debug.Log (steeringForce);
+		//steeringForce +=  0.001f*randomVector();
 
-		rb.velocity = steeringForce.normalized * navMeshAgent.speed;
-		Debug.DrawLine (this.transform.position, this.transform.position + rb.velocity);
+		steeringForce += calculateNavigationVector ()* w_navigation;
+		steeringForce += calculateSeparationVector (hits) *w_separation;
+		//steeringForce += calculateCohesionVector (hits)*w_cohesion;
+		steeringForce += calculateAligmentVector(hits) *w_aligment;
+
+
+		steeringForce = steeringForce.normalized * navMeshAgent.speed; 
+		rb.velocity = steeringForce;
+		Debug.DrawLine (this.transform.position, this.transform.position + rb.velocity,Color.red);
 
 	}
 
 	Vector3 calculateSeparationVector(RaycastHit [] hits){
 		Vector3 result = Vector3.zero;
-
-		//Debug.Log ("Num colliders:" + hits.GetLength (0));
 
 		foreach (RaycastHit h in hits) {
 
@@ -56,8 +67,8 @@ public class GregarianBehaviour : MonoBehaviour {
 				result += toGregarian.normalized * towardsMateWeight;
 			}
 		}
-		Debug.DrawLine (this.transform.position,this.transform.position+result);
-		//Debug.Log (result);
+		Debug.DrawLine (this.transform.position,this.transform.position+result,Color.yellow);
+
 		return result;
 	}
 
@@ -74,16 +85,39 @@ public class GregarianBehaviour : MonoBehaviour {
 			}
 		}
 
-		return result/count;
+		if (count == 0) {
+			return Vector3.zero;
+		}
+
+		return (result/count) -this.transform.position;
 	}
 
 	Vector3 calculateNavigationVector(){
 		Vector3 result = this.navMeshAgent.steeringTarget;
-		Debug.DrawLine (this.transform.position,result);
+		Debug.DrawLine (this.transform.position,result,Color.magenta);
 		return result - this.transform.position;
 	}
 
 	Vector3 randomVector(){
-		return this.transform.position + this.transform.forward * 3 + Random.insideUnitSphere * 3;
+		return this.transform.position + this.transform.forward + Random.insideUnitSphere * 3;
 	}
+
+	Vector3 calculateAligmentVector(RaycastHit[] hits){
+		Vector3 result = Vector3.zero;
+		int count = 0;
+		foreach (RaycastHit h in hits) {
+			if (h.collider.gameObject.tag == "Gregarian"){
+
+				result += h.collider.gameObject.transform.forward;
+				count +=1;
+			}
+		}
+
+		if (count == 0) {
+			return Vector3.zero;
+		}
+		Debug.DrawLine(this.transform.position, this.transform.position + (result / count), Color.cyan);
+		return result/count;
+	}
+
 }
