@@ -20,7 +20,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
 		state = GregarianState.Wandering;
-
+		StartCoroutine (FSM ());
 	}
 
 	IEnumerator FSM(){
@@ -46,7 +46,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		navMeshAgent.speed = 30f;
 
 		if (!foundEnemys()) {
-			state = GregarianState.Flee;
+			state = GregarianState.Wandering;
 		}
 		
 		yield return 0;
