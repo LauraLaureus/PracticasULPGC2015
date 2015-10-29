@@ -3,8 +3,12 @@ using System.Collections;
 
 public class GregarianBehaviour : MonoBehaviour {
 
+	public enum GregarianState{
+		Wandering,
+		Flee
+	}
 
-
+	GregarianState state;
 	private Rigidbody rb;
 	public NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
@@ -15,8 +19,48 @@ public class GregarianBehaviour : MonoBehaviour {
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
+		state = GregarianState.Wandering;
+
 	}
+
+	IEnumerator FSM(){
+		while (true)
+			yield return StartCoroutine (state.ToString ());
+	}
+
+	IEnumerator Wandering(){
+		navMeshAgent.angularSpeed = 1;
+		navMeshAgent.speed = 1.5f;
+
+
+		if (foundEnemys()) {
+			state = GregarianState.Flee;
+		}
+
+		yield return 0;
+	}
+
+	IEnumerator Flee(){
 	
+		navMeshAgent.angularSpeed = 5;
+		navMeshAgent.speed = 30f;
+
+		if (!foundEnemys()) {
+			state = GregarianState.Flee;
+		}
+		
+		yield return 0;
+	}
+
+	bool foundEnemys(){
+		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
+		int countGregarianEnemys = 0;
+		foreach (RaycastHit h in hits) {
+			if (h.collider.gameObject.tag == "Bunny") countGregarianEnemys +=1;
+		}
+		return countGregarianEnemys > 0;
+	}
+
 	// Update is called once per frame
 	void FixedUpdate () {
 	
