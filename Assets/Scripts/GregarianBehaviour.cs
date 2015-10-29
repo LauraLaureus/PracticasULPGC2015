@@ -3,16 +3,6 @@ using System.Collections;
 
 public class GregarianBehaviour : MonoBehaviour {
 
-	private Vector3 separation = Vector3.zero;
-	private Vector3 cohesion = Vector3.zero;
-	private Vector3 aligment = Vector3.zero;
-	private Vector3 navigation = Vector3.zero;
-
-	public float w_separation;
-	public float w_navigation;
-	public float w_inercia;
-	public float w_cohesion;
-	public float w_aligment = 1;
 
 
 	private Rigidbody rb;
@@ -22,36 +12,38 @@ public class GregarianBehaviour : MonoBehaviour {
 
 	//Aquí para hacer la FSM 
 	void Start () {
-		w_separation = 2f;
-		w_navigation = 3f;
-		w_inercia = 1f;
-		w_cohesion = 1f;
-		w_aligment = 1f;
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 	
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
+		Debug.DrawLine (this.transform.position,this.transform.position+this.transform.forward, Color.blue);
 
-
-		steeringForce += w_inercia * steeringForce;
+		steeringForce += GregarianWeights.w_inercia * steeringForce;
 		Debug.DrawLine (this.transform.position,this.transform.position+steeringForce, Color.green);
-		//Debug.Log (steeringForce);
-		//steeringForce +=  0.001f*randomVector();
 
-		steeringForce += calculateNavigationVector ()* w_navigation;
-		steeringForce += calculateSeparationVector (hits) *w_separation;
-		//steeringForce += calculateCohesionVector (hits)*w_cohesion;
-		steeringForce += calculateAligmentVector(hits) *w_aligment;
+		steeringForce +=  0.001f*randomVector();
+
+		steeringForce += calculateNavigationVector ()* GregarianWeights.w_navigation;
+		steeringForce += calculateSeparationVector (hits) *GregarianWeights.w_separation;
+		steeringForce += calculateCohesionVector (hits)*GregarianWeights.w_cohesion;
+		steeringForce += calculateAligmentVector(hits) *GregarianWeights.w_aligment;
 
 
-		steeringForce = steeringForce.normalized * navMeshAgent.speed; 
-		rb.velocity = steeringForce;
-		Debug.DrawLine (this.transform.position, this.transform.position + rb.velocity,Color.red);
+		steeringForce = Vector3.ClampMagnitude (steeringForce, navMeshAgent.speed);
+		steeringForce.y = 0;
+		transform.rotation = Quaternion.Lerp (
+				transform.rotation,
+				Quaternion.LookRotation (steeringForce, Vector3.up),
+				navMeshAgent.angularSpeed * Time.deltaTime
+		);
+		rb.velocity = transform.forward * navMeshAgent.speed;
+
+		Debug.DrawLine (this.transform.position, this.transform.position + steeringForce,Color.red);
 
 	}
 
@@ -75,21 +67,17 @@ public class GregarianBehaviour : MonoBehaviour {
 	Vector3 calculateCohesionVector(RaycastHit[] hits){
 
 		Vector3 result = Vector3.zero;
-		int count = 0;
-
+	
 		foreach (RaycastHit h in hits) {
 			if (h.collider.gameObject.tag == "Gregarian"){
 
-				result += h.collider.gameObject.transform.position;
-				count +=1;
+				Vector3 toGregarian =  h.collider.gameObject.transform.position - this.transform.position;
+				result += toGregarian;
 			}
 		}
 
-		if (count == 0) {
-			return Vector3.zero;
-		}
-
-		return (result/count) -this.transform.position;
+		Debug.DrawLine (this.transform.position,this.transform.position+result,Color.black);
+		return result;
 	}
 
 	Vector3 calculateNavigationVector(){
@@ -99,7 +87,8 @@ public class GregarianBehaviour : MonoBehaviour {
 	}
 
 	Vector3 randomVector(){
-		return this.transform.position + this.transform.forward + Random.insideUnitSphere * 3;
+		Vector3 r = this.transform.position + Random.insideUnitSphere * 3;
+		return r - transform.position;
 	}
 
 	Vector3 calculateAligmentVector(RaycastHit[] hits){
@@ -108,7 +97,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		foreach (RaycastHit h in hits) {
 			if (h.collider.gameObject.tag == "Gregarian"){
 
-				result += h.collider.gameObject.transform.forward;
+				result += h.collider.gameObject.GetComponent<Rigidbody>().velocity;
 				count +=1;
 			}
 		}
@@ -116,8 +105,10 @@ public class GregarianBehaviour : MonoBehaviour {
 		if (count == 0) {
 			return Vector3.zero;
 		}
-		Debug.DrawLine(this.transform.position, this.transform.position + (result / count), Color.cyan);
-		return result/count;
+
+		result /= count;
+		Debug.DrawLine(this.transform.position, this.transform.position + result , Color.cyan);
+		return result ;
 	}
 
 }

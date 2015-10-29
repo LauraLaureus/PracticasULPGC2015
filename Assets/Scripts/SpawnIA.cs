@@ -42,7 +42,7 @@ public class SpawnIA : MonoBehaviour {
 		Debug.DrawLine (destination.position, destination.position + new Vector3(0,50,0));*/
 
 		foreach (GameObject ia in bunnys) {
-			ia.GetComponent<NavMeshAgent>().SetDestination(GameObject.Find("Sphere(Clone)").transform.position);
+			ia.GetComponent<NavMeshAgent>().SetDestination(GameObject.Find("FPS Player").transform.position);
 		}
 	}
 
