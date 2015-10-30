@@ -24,9 +24,10 @@ public class ArrowController : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        Health healthscript;
+        GetComponent<Collider>().enabled = false;
         Destroy(rb);
-        
+
+        Health healthscript;
         GameObject go = other.gameObject;
         if ( (healthscript = go.GetComponent<Health>()) != null)
         {
