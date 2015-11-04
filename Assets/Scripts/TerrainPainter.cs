@@ -10,7 +10,7 @@ public class TerrainPainter : MonoBehaviour
 
     protected void OnEnable()
     {
-        DungeonGenerator.OnMapCreated += this.paintTerrain;
+        DungeonGeneratorStable.OnMapCreated += this.paintTerrain;
     }
 
     protected void paintTerrain(MapCell[,] map, Door d)

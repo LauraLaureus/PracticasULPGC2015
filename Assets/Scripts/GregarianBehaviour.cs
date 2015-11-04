@@ -3,65 +3,99 @@ using System.Collections;
 
 public class GregarianBehaviour : MonoBehaviour {
 
-	public enum GregarianState{
-		Wandering,
-		Flee
-	}
 
-	GregarianState state;
+	
 	private Rigidbody rb;
-	public NavMeshAgent navMeshAgent;
+	private NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
+	
 
-
-	//Aquí para hacer la FSM 
 	void Start () {
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
-		state = GregarianState.Wandering;
-		StartCoroutine (FSM ());
+		StartCoroutine (startFSM());
 	}
 
-	IEnumerator FSM(){
+	void OnTriggerEnter(Collider other){
+		if (other.tag == "Fruit") {
+			this.hunger -=50;
+		}
+	}
+
+	/*---------FSM---------*/
+
+	public enum GregarianState{
+		Evaluate,
+		Wandering,
+		Flee,
+		ChasingFruit
+	}
+
+	/*Variables de estado*/
+	public int hunger;
+	public GregarianState state;
+	
+	public IEnumerator startFSM(){
 		while (true)
 			yield return StartCoroutine (state.ToString ());
 	}
-
+	
 	IEnumerator Wandering(){
 		navMeshAgent.angularSpeed = 1;
 		navMeshAgent.speed = 1.5f;
-
-
-		if (foundEnemys()) {
-			state = GregarianState.Flee;
-		}
-
-		yield return 0;
-	}
-
-	IEnumerator Flee(){
-	
-		navMeshAgent.angularSpeed = 5;
-		navMeshAgent.speed = 30f;
-
-		if (!foundEnemys()) {
-			state = GregarianState.Wandering;
-		}
+		hunger += 1;
+		
+		state = GregarianState.Evaluate;
 		
 		yield return 0;
 	}
+	
+	IEnumerator Flee(){
+		
+		navMeshAgent.angularSpeed = 5;
+		navMeshAgent.speed = 5f;
+		hunger += 5;
+		
+		state = GregarianState.Evaluate;
+		
+		yield return 0;
+	}
+	
+	IEnumerator ChasingFruit(){
+		navMeshAgent.angularSpeed = 3;
+		navMeshAgent.speed = 3f;
+		hunger += 2;
 
+		state = GregarianState.Evaluate;
+		yield return 0;
+	}
+	
+	IEnumerator Evaluate(){
+
+		if (foundEnemys ()) {
+			state = GregarianState.Flee;
+		} else if (hunger > 100) {
+			state = GregarianState.ChasingFruit;
+			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
+		} else {
+			state = GregarianState.Wandering;
+			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
+		}
+		yield return 0;
+	}
+	
 	bool foundEnemys(){
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
 		int countGregarianEnemys = 0;
 		foreach (RaycastHit h in hits) {
 			if (h.collider.gameObject.tag == "Bunny") countGregarianEnemys +=1;
 		}
+		Debug.Log ("Found Enemys:" + countGregarianEnemys);
 		return countGregarianEnemys > 0;
 	}
 
-	// Update is called once per frame
+	/*BOIDS*/
 	void FixedUpdate () {
 	
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);

@@ -16,12 +16,13 @@ public class HeightMapApplicator : MonoBehaviour {
 
 
 	void OnEnable(){
-		DungeonGenerator.OnMapCreated += apply;
+		DungeonGeneratorStable.OnMapCreated += apply;
 	}
 
 	protected void apply(MapCell[,] map,Door door){
 
 		terrain = this.gameObject.GetComponent<Terrain> ();
+		//Debug.Log ("Dimensiones del mapa de alturas:" + terrain.terrainData.heightmapWidth + "x" + terrain.terrainData.heightmapHeight);
 		float[,] heights = terrain.terrainData.GetHeights (0, 0, terrain.terrainData.heightmapWidth, terrain.terrainData.heightmapWidth);
 		applyCellMap (heights,map);
 		callPlayerCreator (door);
