@@ -59,8 +59,6 @@ public class DungeonGeneratorStable : MonoBehaviour {
 	void ToolChain(){
 		Door selected = selectDoor ();
 		selected.translateInto (width, height);
-		//Debug.Log ("Puerta:" + selected.x + " " + selected.y);
-		
 		
 		if (OnMapCreated != null)
 			OnMapCreated (map,selected);

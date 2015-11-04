@@ -17,12 +17,19 @@ public class GregarianBehaviour : MonoBehaviour {
 		StartCoroutine (startFSM());
 	}
 
+	void OnTriggerEnter(Collider other){
+		if (other.tag == "Fruit") {
+			this.hunger -=50;
+		}
+	}
+
 	/*---------FSM---------*/
 
 	public enum GregarianState{
 		Evaluate,
 		Wandering,
-		Flee
+		Flee,
+		ChasingFruit
 	}
 
 	/*Variables de estado*/
@@ -55,14 +62,25 @@ public class GregarianBehaviour : MonoBehaviour {
 		yield return 0;
 	}
 	
+	IEnumerator ChasingFruit(){
+		navMeshAgent.angularSpeed = 3;
+		navMeshAgent.speed = 3f;
+		hunger += 2;
+
+		state = GregarianState.Evaluate;
+		yield return 0;
+	}
+	
 	IEnumerator Evaluate(){
 
 		if (foundEnemys ()) {
 			state = GregarianState.Flee;
 		} else if (hunger > 100) {
-			//TODO hacer algo para que se aproxime a la fruta.
+			state = GregarianState.ChasingFruit;
+			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
 		} else {
 			state = GregarianState.Wandering;
+			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
 		}
 		yield return 0;
 	}
