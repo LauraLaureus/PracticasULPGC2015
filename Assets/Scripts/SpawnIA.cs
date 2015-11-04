@@ -12,7 +12,7 @@ public class SpawnIA : MonoBehaviour {
 	private List<GameObject> bunnys;
 
 	void OnEnable(){
-		DungeonGenerator.OnLiveNeeded += generateIA;
+		DungeonGeneratorStable.OnLiveNeeded += generateIA;
 		bunnys = new List<GameObject>();
 	}
 
@@ -41,6 +41,6 @@ public class SpawnIA : MonoBehaviour {
 	}
 
 	void OnDisable(){
-		DungeonGenerator.OnLiveNeeded -= generateIA;
+		DungeonGeneratorStable.OnLiveNeeded -= generateIA;
 	}
 }

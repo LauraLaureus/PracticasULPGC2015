@@ -4,14 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class SpawnAndGrowFruit : MonoBehaviour {
-
-	//DONE hacer que funcione a como el spawn de IA: genere una fruta en una puerta. 
-	//DONE hacer que guarde una lista de cada una de las frutas generadas.
-	//DONE generar más fruta (este parámetro será público) cada S segundos (público también)
-	//TODO las frutas comidas por las IAs deben mandar un evento con su identificador para eliminarlas de la lista.
-	//TODO si la lista baja de 5 frutas generar más en otras puertas.
-
-
+	
 
 	public enum FruitState
 	{
@@ -29,7 +22,7 @@ public class SpawnAndGrowFruit : MonoBehaviour {
 	private FruitState state;
 
 	void OnEnable(){
-		DungeonGenerator.OnLiveNeeded += generateFruit;
+		DungeonGeneratorStable.OnLiveNeeded += generateFruit;
 		fruitsCreated = new List<GameObject>();
 	}
 
@@ -85,6 +78,6 @@ public class SpawnAndGrowFruit : MonoBehaviour {
 	}
 
 	void OnDisable(){
-		DungeonGenerator.OnLiveNeeded -= generateFruit;
+		DungeonGeneratorStable.OnLiveNeeded -= generateFruit;
 	}
 }
