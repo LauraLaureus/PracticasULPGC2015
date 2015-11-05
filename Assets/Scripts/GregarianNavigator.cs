@@ -77,20 +77,50 @@ public class GregarianNavigator : MonoBehaviour {
 
 	private static List<Vector3> generatePointsInSight(Vector3 whereIam,Vector3 whereIamLooking, float distance){
 	
+
 		List<Vector3> result = new List<Vector3>();
 
+		float colliderThreshold = 0.5f;
 		float y = whereIam.y;//DEBUGNOTE: sumarle whereIamLooking?? Se supone que nos movemos en el mismo plano.
+		float angleInRadians = 10f*Mathf.PI/180;
 
 		//Se puede ir para delante??
-		if(!Physics.Raycast(whereIam, whereIam+whereIamLooking*distance)){
+		if(!Physics.Raycast(whereIam, whereIam+whereIamLooking*distance,distance+colliderThreshold)){
 			//Generar puntos hacia delante
-
+			Debug.Log ("Voy para el frente");
 			float z = whereIam.z+(whereIamLooking.z*distance);
-			float angleInRadians = 10f*Mathf.PI/180;
+
 
 			//Generate 10 candidates
 			for(int i = 0; i < 10; i++){
 				result.Add(new Vector3(whereIam.x + Random.Range(-angleInRadians,angleInRadians),y,z));
+			}
+
+		}
+		//Se puede ir hacia la derecha??
+		else if(!Physics.Raycast(whereIam, whereIam+Vector3.right*distance,distance+colliderThreshold)){
+			Debug.Log ("Voy para la derecha");
+			float x = whereIam.x+(Vector3.right.x*distance);
+
+			for(int i = 0; i < 10; i++){
+				result.Add(new Vector3(
+					x,
+					y,
+					whereIam.z+Mathf.Sin(Random.Range(2*angleInRadians,4*angleInRadians))
+					));
+			}
+		}
+
+		else if(!Physics.Raycast(whereIam, whereIam+Vector3.left*distance,distance+colliderThreshold)){
+			Debug.Log ("Voy para la izq");
+			float x = whereIam.x+(Vector3.right.x*distance);
+			
+			for(int i = 0; i < 10; i++){
+				result.Add(new Vector3(
+					x,
+					y,
+					whereIam.z+Mathf.Sin(Random.Range(-2*angleInRadians,-4*angleInRadians))
+					));
 			}
 
 		}
