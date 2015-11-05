@@ -39,7 +39,8 @@ public class GregarianNavigator : MonoBehaviour {
 
 			System.Array.Sort(heuristics.ToArray(),candidates.ToArray());
 		}
-		
+
+		Debug.DrawLine (candidates[0], candidates[0] + Vector3.up * 100f, Color.white);
 		return candidates.ToArray()[0];
 	}
 
@@ -81,11 +82,11 @@ public class GregarianNavigator : MonoBehaviour {
 		float y = whereIam.y;//DEBUGNOTE: sumarle whereIamLooking?? Se supone que nos movemos en el mismo plano.
 
 		//Se puede ir para delante??
-		if(Physics.Raycast(whereIam, whereIam+whereIamLooking*distance)){
+		if(!Physics.Raycast(whereIam, whereIam+whereIamLooking*distance)){
 			//Generar puntos hacia delante
 
 			float z = whereIam.z+(whereIamLooking.z*distance);
-			float angleInRadians = 10f/Mathf.PI;
+			float angleInRadians = 10f*Mathf.PI/180;
 
 			//Generate 10 candidates
 			for(int i = 0; i < 10; i++){
