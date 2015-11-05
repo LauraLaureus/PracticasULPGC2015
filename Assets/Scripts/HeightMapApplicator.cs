@@ -115,7 +115,7 @@ public class HeightMapApplicator : MonoBehaviour {
 	
 
 	void OnDisable(){
-		DungeonGenerator.OnMapCreated -= apply;
+        DungeonGeneratorStable.OnMapCreated -= apply;
 
 	}
 
