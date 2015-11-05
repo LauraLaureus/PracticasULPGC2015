@@ -65,7 +65,7 @@ public class TerrainPainter : MonoBehaviour
 
     protected void OnDisable()
     {
-        DungeonGenerator.OnMapCreated -= this.paintTerrain;
+        DungeonGeneratorStable.OnMapCreated -= this.paintTerrain;
     }
 
 }
