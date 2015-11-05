@@ -18,9 +18,9 @@ public class GregarianNavigator : MonoBehaviour {
 		while (candidates.Count == 0) {
 
 			//TODO generate todos los puntos que están a 1 metro del objeto y que son alcanzables
-			//candidates = generateForwardPoints(whereIam,whereIamLooking,1);
-			candidates = generateNCloseRandomPositions (50,whereIam);
-			candidates = removeNonReacheable(candidates,whereIam);
+			candidates = generatePointsInSight(whereIam,whereIamLooking,1);
+			//candidates = generateNCloseRandomPositions (50,whereIam);
+			//candidates = removeNonReacheable(candidates,whereIam);
 			if(candidates.Count == 0) continue;
 
 			List<float> heuristics = new List<float>();
@@ -74,7 +74,26 @@ public class GregarianNavigator : MonoBehaviour {
 
 	}
 
-	private List<Vector3> generateForwardPoints(Vector3 whereIam,Vector3 whereIamLooking, float distance){
+	private static List<Vector3> generatePointsInSight(Vector3 whereIam,Vector3 whereIamLooking, float distance){
+	
+		List<Vector3> result = new List<Vector3>();
 
+		float y = whereIam.y;//DEBUGNOTE: sumarle whereIamLooking?? Se supone que nos movemos en el mismo plano.
+
+		//Se puede ir para delante??
+		if(Physics.Raycast(whereIam, whereIam+whereIamLooking*distance)){
+			//Generar puntos hacia delante
+
+			float z = whereIam.z+(whereIamLooking.z*distance);
+			float angleInRadians = 10f/Mathf.PI;
+
+			//Generate 10 candidates
+			for(int i = 0; i < 10; i++){
+				result.Add(new Vector3(whereIam.x + Random.Range(-angleInRadians,angleInRadians),y,z));
+			}
+
+		}
+
+		return result;
 	}
 }

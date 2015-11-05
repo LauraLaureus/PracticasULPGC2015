@@ -8,7 +8,8 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Rigidbody rb;
 	private NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
-	
+
+
 
 	void Start () {
 		rb = this.gameObject.GetComponent<Rigidbody> ();
@@ -32,10 +33,11 @@ public class GregarianBehaviour : MonoBehaviour {
 		ChasingFruit
 	}
 
-	/*Variables de estado*/
+	/*--------Variables de estado---------*/
 	public int hunger;
 	public GregarianState state;
-	
+	public int hungerThreshold;
+
 	public IEnumerator startFSM(){
 		while (true)
 			yield return StartCoroutine (state.ToString ());
@@ -75,12 +77,15 @@ public class GregarianBehaviour : MonoBehaviour {
 
 		if (foundEnemys ()) {
 			state = GregarianState.Flee;
-		} else if (hunger > 100) {
+		} else if (hunger > hungerThreshold) {
 			state = GregarianState.ChasingFruit;
-			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
+			if(navMeshAgent.remainingDistance <= 0.01)
+				Debug.Log ("Tengo Hambre.");
+				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));
 		} else {
 			state = GregarianState.Wandering;
-			navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position));
+			if(navMeshAgent.remainingDistance <= 0.1)
+				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));
 		}
 		yield return 0;
 	}
@@ -91,7 +96,6 @@ public class GregarianBehaviour : MonoBehaviour {
 		foreach (RaycastHit h in hits) {
 			if (h.collider.gameObject.tag == "Bunny") countGregarianEnemys +=1;
 		}
-		Debug.Log ("Found Enemys:" + countGregarianEnemys);
 		return countGregarianEnemys > 0;
 	}
 
