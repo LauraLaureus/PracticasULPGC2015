@@ -15,7 +15,8 @@ public class GregarianBehaviour : MonoBehaviour {
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
-		StartCoroutine (startFSM());
+		StartCoroutine(this.gameObject.GetComponent<GregarianFSM> ().StartFSM ());
+		//StartCoroutine (startFSM());
 	}
 
 	void OnTriggerEnter(Collider other){
