@@ -79,13 +79,13 @@ public class GregarianBehaviour : MonoBehaviour {
 			state = GregarianState.Flee;
 		} else if (hunger > hungerThreshold) {
 			state = GregarianState.ChasingFruit;
-			if(navMeshAgent.remainingDistance <= 0.01)
+			/*if(navMeshAgent.remainingDistance <= 0.01)
 				Debug.Log ("Tengo Hambre.");
-				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));
+				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));*/
 		} else {
 			state = GregarianState.Wandering;
-			if(navMeshAgent.remainingDistance <= 0.1)
-				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));
+			/*if(navMeshAgent.remainingDistance <= 0.1)
+				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));*/
 		}
 		yield return 0;
 	}
