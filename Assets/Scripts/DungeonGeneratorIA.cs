@@ -88,7 +88,7 @@ public class DungeonGeneratorIA : MonoBehaviour
 
     }
 
-    void PaintMap()
+    void PaintFloor()
     {
         for (int i = 0; i < width; i++)
         {
@@ -99,6 +99,15 @@ public class DungeonGeneratorIA : MonoBehaviour
                 else
                     UpdateVisualMap(i, j, Color.white);
             }
+        }
+    }
+
+    void PaintMiners()
+    {
+        for (int i = 0; i < miners.Count; i++)
+        {
+            int[] pos = miners[i].GetPos();
+            UpdateVisualMap(pos[0], pos[1], Color.blue);
         }
     }
 
@@ -464,12 +473,9 @@ public class DungeonGeneratorIA : MonoBehaviour
     {
         if (minersAlive)
         {
-            PaintMap();
-            for (int i = 0; i < miners.Count; i++)
-            {
-                int[] pos = miners[i].GetPos();
-                UpdateVisualMap(pos[0], pos[1], Color.blue);
-            }
+            PaintFloor();
+            PaintMiners();
+            
             ShowMap();
         }
 
