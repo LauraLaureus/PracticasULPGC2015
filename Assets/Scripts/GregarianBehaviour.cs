@@ -21,84 +21,10 @@ public class GregarianBehaviour : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		if (other.tag == "Fruit") {
-			this.hunger -=50;
+			gameObject.GetComponent<GregarianFSM>().hunger -=50;
 		}
 	}
-
-	/*---------FSM---------*/
-
-	public enum GregarianState{
-		Evaluate,
-		Wandering,
-		Flee,
-		ChasingFruit
-	}
-
-	/*--------Variables de estado---------*/
-	public int hunger;
-	public GregarianState state;
-	public int hungerThreshold;
-
-	public IEnumerator startFSM(){
-		while (true)
-			yield return StartCoroutine (state.ToString ());
-	}
 	
-	IEnumerator Wandering(){
-		navMeshAgent.angularSpeed = 1;
-		navMeshAgent.speed = 1.5f;
-		hunger += 1;
-		
-		state = GregarianState.Evaluate;
-		
-		yield return 0;
-	}
-	
-	IEnumerator Flee(){
-		
-		navMeshAgent.angularSpeed = 5;
-		navMeshAgent.speed = 5f;
-		hunger += 5;
-		
-		state = GregarianState.Evaluate;
-		
-		yield return 0;
-	}
-	
-	IEnumerator ChasingFruit(){
-		navMeshAgent.angularSpeed = 3;
-		navMeshAgent.speed = 3f;
-		hunger += 2;
-
-		state = GregarianState.Evaluate;
-		yield return 0;
-	}
-	
-	IEnumerator Evaluate(){
-
-		if (foundEnemys ()) {
-			state = GregarianState.Flee;
-		} else if (hunger > hungerThreshold) {
-			state = GregarianState.ChasingFruit;
-			/*if(navMeshAgent.remainingDistance <= 0.01)
-				Debug.Log ("Tengo Hambre.");
-				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));*/
-		} else {
-			state = GregarianState.Wandering;
-			/*if(navMeshAgent.remainingDistance <= 0.1)
-				navMeshAgent.SetDestination(GregarianNavigator.navigate(state,transform.position,transform.forward));*/
-		}
-		yield return 0;
-	}
-	
-	bool foundEnemys(){
-		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
-		int countGregarianEnemys = 0;
-		foreach (RaycastHit h in hits) {
-			if (h.collider.gameObject.tag == "Bunny") countGregarianEnemys +=1;
-		}
-		return countGregarianEnemys > 0;
-	}
 
 	/*BOIDS*/
 	void FixedUpdate () {
