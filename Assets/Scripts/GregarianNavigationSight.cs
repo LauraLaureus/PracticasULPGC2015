@@ -42,17 +42,23 @@ public class GregarianNavigationSight : MonoBehaviour {
 		if(!NavMesh.Raycast(whereIam,whereIam + whereIamLooking * sightDistance,out hit,NavMesh.AllAreas)){
 			return whereIam + whereIamLooking * sightDistance;
 		} else if (!NavMesh.Raycast (whereIam, whereIam + Vector3.right * sightDistance,out hit,NavMesh.AllAreas)) {
-			this.gameObject.transform.LookAt(whereIam + Vector3.right* sightDistance);
+			Debug.Log("Derecha");
+			//this.gameObject.transform.LookAt(whereIam + Vector3.right* sightDistance);
 			return whereIam + Vector3.right* sightDistance;
 		} else if (!NavMesh.Raycast (whereIam, whereIam + Vector3.left* sightDistance,out hit,NavMesh.AllAreas)) {
-			this.gameObject.transform.LookAt(whereIam + Vector3.left* sightDistance);
+			Debug.Log("Izquierda");
+			//this.gameObject.transform.LookAt(whereIam + Vector3.left* sightDistance);
 			return whereIam - Vector3.right * sightDistance;
 		} else {
+			Debug.Log("Atrás");
 			this.gameObject.transform.LookAt(-whereIamLooking+whereIam);
 			return whereIam-whereIamLooking;
 		}
 
 	}
 
+	public void eatenFruit(){
+		mem.eatenFruit ();
+	}
 
 }

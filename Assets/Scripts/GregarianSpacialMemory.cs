@@ -37,4 +37,8 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	public bool canIgoHere(Vector3 currentPosition,Vector3 destination){
 		return true;
 	}
+
+	public void eatenFruit(){
+		this.fruitPosition = Vector3.zero;
+	}
 }

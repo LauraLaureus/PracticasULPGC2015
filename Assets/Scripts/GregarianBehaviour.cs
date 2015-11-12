@@ -23,6 +23,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		if (other.tag == "Fruit") {
 			other.gameObject.GetComponent<FruitBehaviour>().eaten();
 			gameObject.GetComponent<GregarianFSM>().hunger -=50;
+			gameObject.GetComponent<GregarianNavigationSight>().eatenFruit();
 		}
 	}
 	
