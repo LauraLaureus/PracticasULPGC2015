@@ -82,4 +82,8 @@ public class GregarianFSM : MonoBehaviour {
 		return countGregarianEnemys > 0;
 	}
 
+	public bool amIHungry(){
+		return hunger > hungerBoundary;
+	}
+
 }

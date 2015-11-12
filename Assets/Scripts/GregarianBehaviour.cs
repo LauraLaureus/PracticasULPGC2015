@@ -21,6 +21,7 @@ public class GregarianBehaviour : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		if (other.tag == "Fruit") {
+			other.gameObject.GetComponent<FruitBehaviour>().eaten();
 			gameObject.GetComponent<GregarianFSM>().hunger -=50;
 		}
 	}

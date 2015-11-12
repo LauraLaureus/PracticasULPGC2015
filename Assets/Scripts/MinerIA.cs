@@ -101,7 +101,7 @@ public class MinerIA: MonoBehaviour
             pos = newPos;
 
             DigPosition();
-            EditProbabilities(Ran);
+            //EditProbabilities(Ran);
             CompileRulette();
             yield return 0;
         }
