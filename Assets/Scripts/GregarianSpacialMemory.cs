@@ -4,14 +4,14 @@ using System.Collections.Generic;
 public class GregarianSpacialMemory : MonoBehaviour {
 
 	private Vector3 fruitPosition;
-	private Queue<Vector3> path;
+	private List<Vector3> path;
 	private Vector3 lastPointInPath;
 	public int pathPointsRetention;
 
 	public void Start(){
 		fruitPosition = Vector3.zero;
-		path = new Queue<Vector3> ();
-		pathPointsRetention = 50;
+		path = new List<Vector3> ();
+		pathPointsRetention = 10;
 	}
 
 	public void setFruit(GameObject f){
@@ -23,11 +23,11 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		return this.fruitPosition;
 	}
 
-	public void setNewPointInPath(GameObject o){
+	public void setNewPointInPath(Vector3 o){
 		if (path.Count > pathPointsRetention)
-			path.Dequeue();
-		lastPointInPath = o.transform.position;
-		path.Enqueue(o.transform.position);
+			path.RemoveAt (path.Count-1);
+		lastPointInPath = o;
+		path.Add(o);
 	}
 
 	public bool doIknowWhereFruitIs(){
@@ -35,6 +35,16 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	}
 
 	public bool canIgoHere(Vector3 currentPosition,Vector3 destination){
+		float angle = Vector3.Angle (currentPosition - lastPointInPath, destination - currentPosition);
+		//Debug.Log ("Angle is:" + angle.ToString ());
+		return  angle < 90F && doesntBelongToPath(destination);
+	}
+
+	private bool doesntBelongToPath(Vector3 v){
+		foreach (Vector3 point in path) {
+			if (v == point) return false;
+		}
+		//Debug.Log("No pertenece a la trayectoria");
 		return true;
 	}
 
