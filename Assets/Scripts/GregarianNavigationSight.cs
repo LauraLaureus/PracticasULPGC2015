@@ -10,7 +10,6 @@ public class GregarianNavigationSight : MonoBehaviour {
 	private GregarianFSM fsm;
 	private GregarianSpacialMemory mem;
 
-
 	void Start(){
 		agent = this.gameObject.GetComponent<NavMeshAgent> ();
 		mem = gameObject.GetComponent<GregarianSpacialMemory> ();
@@ -20,23 +19,29 @@ public class GregarianNavigationSight : MonoBehaviour {
 	void FixedUpdate () {
 
 		Vector3 destination;
-
-		if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
+		if (fsm.amIHungry () && mem.CountMemories () > 0 && mem.doIknowWhereFruitIs ()) {
 			destination = mem.getFruit ();
-		} else {
-			if(!agent.hasPath || agent.remainingDistance < 1f)
+		} else if (mem.isPersitentDestination()) {
+			Debug.Log("is Persistent");
+			destination = takeAPhysicalNavigableLook();
+		}
+		else {
+			if(!agent.hasPath || agent.remainingDistance < 1.1f)
 				destination = takeAPhysicalNavigableLook();
 			else
 				destination = agent.destination;
 		}
+
+
 		mem.setNewPointInPath (destination);
 		agent.SetDestination (destination);
+
 		Debug.DrawRay(agent.destination,(Vector3.up*100),Color.white);
 
 	}
 
 
-
+	/*
 
 	Vector3 takeALook(){
 		Vector3 whereIam = this.gameObject.transform.position;
@@ -62,37 +67,73 @@ public class GregarianNavigationSight : MonoBehaviour {
 			return whereIam;
 		}
 
-	}
+	}*/
 	Vector3 takeAPhysicalNavigableLook(){
 		Vector3 whereIam = this.gameObject.transform.position;
 		Vector3 whereIamLooking = this.gameObject.transform.forward;
 
 		RaycastHit hit;
 		Vector3 result = Vector3.zero;
+		Vector3 forward,right,left;
 
 		Physics.Raycast (whereIam, whereIamLooking, out hit);
-		result += whereIam-hit.point;
-		Debug.Log ("Raycast1" + result.ToString ());
+		forward = hit.point - whereIam;
+
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.right, out hit);
-		result += whereIam-hit.point;
-		Debug.Log ("Raycast2" + result.ToString ());
+		right = hit.point-whereIam;
+
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.left, out hit);
-		result += whereIam-hit.point;
-		Debug.Log ("Raycast3" + result.ToString ());
+		left = hit.point-whereIam;
 
-		/*NavMeshHit navhit;
-		if(NavMesh.SamplePosition(whereIam,out navhit,sightDistance,NavMesh.AllAreas)){
-			Debug.Log("Hit position");
-			result += whereIam -navhit.position;
-		}*/
+		result = computateDestinationInSight (forward,right, left);
 
 		return result+whereIam;
 	}
 
+	Vector3 computateDestinationInSight( Vector3 forward, Vector3 right,Vector3 left){
 
-	Vector3 takeANavigableLook(){
+		/*Control de que evtar paredes*/
+
+		if (right.magnitude < sightDistance / 3f) {
+			right = Vector3.zero;
+		}
+
+		if (left.magnitude < sightDistance / 3f) {
+			left = Vector3.zero;
+		}
+
+		if (forward.magnitude < sightDistance / 3f ) {
+			if(right.magnitude < 0.1f && left.magnitude <0.1f){
+				Debug.Log("To Icengard");
+				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
+			}
+			forward = Vector3.zero;
+		}
+
+		/*Control de lejanía*/
+		/*if (right.magnitude > sightDistance ) {
+			right = right.normalized * sightDistance;
+		}
+		
+		if (left.magnitude > sightDistance) {
+			left = left.normalized * sightDistance;
+		}
+
+		if (forward.magnitude > sightDistance) {
+			forward = forward.normalized * sightDistance;
+		}
+
+		if (right.magnitude == left.magnitude) {
+			return (right+forward).normalized*sightDistance*0.9f;
+		}*/
+
+		return 0.9f*(forward + left + right);
+
+	}
+
+	/*Vector3 takeANavigableLook(){
 		Vector3 whereIam = this.gameObject.transform.position;
 		Vector3 whereIamLooking = this.gameObject.transform.forward;
 
@@ -113,7 +154,7 @@ public class GregarianNavigationSight : MonoBehaviour {
 		}
 		//Debug.Log (result.ToString ());
 		return result;
-	}
+	}*/
 
 	bool isNavigable(Vector3 origin, Vector3 destination){
 		NavMeshHit hit;

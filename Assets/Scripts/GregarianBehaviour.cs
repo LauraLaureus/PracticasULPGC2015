@@ -31,7 +31,7 @@ public class GregarianBehaviour : MonoBehaviour {
 	/*BOIDS*/
 	void FixedUpdate () {
 	
-		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
+		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 4f, Vector3.forward);
 		Debug.DrawLine (this.transform.position,this.transform.position+this.transform.forward, Color.blue);
 
 		steeringForce += GregarianWeights.w_inercia * steeringForce;

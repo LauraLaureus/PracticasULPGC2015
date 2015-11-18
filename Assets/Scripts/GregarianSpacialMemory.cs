@@ -11,6 +11,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	public void Start(){
 		fruitPosition = Vector3.zero;
 		path = new List<Vector3> ();
+		path.Add (this.gameObject.transform.position);
 		pathPointsRetention = 10;
 	}
 
@@ -30,6 +31,14 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		path.Add(o);
 	}
 
+	public int CountMemories(){
+		return path.Count;
+	}
+
+	public Vector3 getLastPointIStayed(){
+		return path [path.Count-1];
+	}
+
 	public bool doIknowWhereFruitIs(){
 		return fruitPosition != Vector3.zero;
 	}
@@ -44,11 +53,19 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		foreach (Vector3 point in path) {
 			if (v == point) return false;
 		}
-		//Debug.Log("No pertenece a la trayectoria");
 		return true;
 	}
 
 	public void eatenFruit(){
 		this.fruitPosition = Vector3.zero;
+	}
+
+	public bool isPersitentDestination(){
+		int count = 0;
+		Vector3 last = path[path.Count-1];
+		for (int i = 2; i < path.Count/5; i++) {
+			if(path[path.Count -i] == last) count +=1;
+		}
+		return count > 5;
 	}
 }
