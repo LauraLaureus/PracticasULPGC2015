@@ -29,7 +29,8 @@ public class GregarianNavigationSight : MonoBehaviour {
 			if(!agent.hasPath || agent.remainingDistance < 1.1f)
 				destination = takeAPhysicalNavigableLook();
 			else
-				destination = agent.destination;
+				//destination = agent.destination;
+				return;
 		}
 
 
@@ -41,33 +42,7 @@ public class GregarianNavigationSight : MonoBehaviour {
 	}
 
 
-	/*
 
-	Vector3 takeALook(){
-		Vector3 whereIam = this.gameObject.transform.position;
-		Vector3 whereIamLooking = this.gameObject.transform.forward;
-
-		if (isNavigable (whereIam, whereIam + whereIamLooking * sightDistance) && mem.canIgoHere (whereIam, whereIam + whereIamLooking * sightDistance)) {
-			return whereIam + whereIamLooking * sightDistance;
-		} else if (isNavigable (whereIam, whereIam + Vector3.right * sightDistance) && mem.canIgoHere (whereIam, whereIam + Vector3.right * sightDistance)) {
-			Debug.Log ("Derecha");
-			return whereIam + Vector3.right * sightDistance;
-		} else if (isNavigable (whereIam, whereIam + Vector3.left * sightDistance) && mem.canIgoHere (whereIam, whereIam + Vector3.left * sightDistance)) {
-			Debug.Log ("Izquierda");
-			return whereIam - Vector3.right * sightDistance;
-		} else if (isNavigable (whereIam, whereIam - whereIamLooking * sightDistance) && mem.canIgoHere (whereIam, whereIam - whereIamLooking * sightDistance)) {
-			Debug.Log ("Atrás");
-			return whereIam - whereIamLooking * sightDistance;
-		} else {
-			NavMeshHit hit;
-			if(NavMesh.SamplePosition(whereIam,out hit,sightDistance,NavMesh.AllAreas)){
-				Debug.Log("Hit position");
-				return hit.position;
-			}
-			return whereIam;
-		}
-
-	}*/
 	Vector3 takeAPhysicalNavigableLook(){
 		Vector3 whereIam = this.gameObject.transform.position;
 		Vector3 whereIamLooking = this.gameObject.transform.forward;
@@ -107,62 +82,36 @@ public class GregarianNavigationSight : MonoBehaviour {
 		if (forward.magnitude < sightDistance / 3f ) {
 			if(right.magnitude < 0.1f && left.magnitude <0.1f){
 				Debug.Log("To Icengard");
-				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
+				//return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
+				gameObject.transform.LookAt((gameObject.transform.forward+Vector3.right));
 			}
 			forward = Vector3.zero;
 		}
 
-		/*Control de lejanía*/
-		/*if (right.magnitude > sightDistance ) {
-			right = right.normalized * sightDistance;
-		}
-		
-		if (left.magnitude > sightDistance) {
-			left = left.normalized * sightDistance;
-		}
-
-		if (forward.magnitude > sightDistance) {
-			forward = forward.normalized * sightDistance;
+		if ((forward + left + right).magnitude < 0.1f) {
+			NavMeshHit hit;
+			if(NavMesh.SamplePosition(gameObject.transform.position, out hit, 2f*sightDistance,NavMesh.AllAreas)){
+				Debug.Log("To DigitalWorld");
+				return hit.position;
+			}else{
+				Debug.Log ("To Pueblo Paleta");
+				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
+			}
 		}
 
-		if (right.magnitude == left.magnitude) {
-			return (right+forward).normalized*sightDistance*0.9f;
-		}*/
+		return (forward + left + right);
 
-		return 0.9f*(forward + left + right);
 
 	}
 
-	/*Vector3 takeANavigableLook(){
-		Vector3 whereIam = this.gameObject.transform.position;
-		Vector3 whereIamLooking = this.gameObject.transform.forward;
 
-		NavMeshHit hit;
-		Vector3 result = whereIam;
-
-		if (NavMesh.Raycast (whereIam, whereIam + whereIamLooking *sightDistance, out hit, NavMesh.AllAreas)) {
-			Debug.Log ("Dentro del Raycast");
-			result += hit.position;
-		}
-		if (NavMesh.Raycast (whereIam, whereIam + (whereIamLooking + Vector3.right * sightDistance), out hit, NavMesh.AllAreas)) {
-			Debug.Log ("Dentro del raycast de la derecha");
-			result += hit.position;
-		}
-		if (NavMesh.Raycast (whereIam, whereIam +(whereIamLooking + Vector3.left * sightDistance), out hit, NavMesh.AllAreas)) {
-			Debug.Log ("Dentro del raycast de la izquierda");
-			result += hit.position;
-		}
-		//Debug.Log (result.ToString ());
-		return result;
-	}*/
-
-	bool isNavigable(Vector3 origin, Vector3 destination){
+	/*bool isNavigable(Vector3 origin, Vector3 destination){
 		NavMeshHit hit;
 		return !NavMesh.Raycast (origin,destination,out hit,NavMesh.AllAreas);
-	}
+	}*/
 
-	public void eatenFruit(){
-		mem.eatenFruit ();
+	public void eatenFruit(GameObject f){
+		mem.eatenFruit (f);
 	}
 
 }

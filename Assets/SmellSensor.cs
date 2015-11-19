@@ -8,7 +8,7 @@ public class SmellSensor : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		mem = gameObject.GetComponent<GregarianSpacialMemory> ();
-		smellRadius = 2f;
+		smellRadius = 4f;
 	}
 	
 

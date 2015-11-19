@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 public class GregarianSpacialMemory : MonoBehaviour {
 
-	private Vector3 fruitPosition;
+	private List<GameObject> fruitPosition;
 	private List<Vector3> path;
 	private Vector3 lastPointInPath;
 	public int pathPointsRetention;
 
-	public void Start(){
-		fruitPosition = Vector3.zero;
+	public void OnEnable(){
+		fruitPosition = new List<GameObject> ();
 		path = new List<Vector3> ();
 		path.Add (this.gameObject.transform.position);
 		pathPointsRetention = 10;
@@ -17,14 +17,20 @@ public class GregarianSpacialMemory : MonoBehaviour {
 
 	public void setFruit(GameObject f){
 		Debug.Log("Huelo a fruta");
-		this.fruitPosition = f.transform.position;
+
+		if (fruitPosition.Contains (f))
+			return;
+		fruitPosition.Add (f);
+		
 	}
 
 	public Vector3 getFruit(){
-		return this.fruitPosition;
+		return fruitPosition[fruitPosition.Count-1].transform.position;
 	}
 
 	public void setNewPointInPath(Vector3 o){
+		if (path == null)
+			return;
 		if (path.Count > pathPointsRetention)
 			path.RemoveAt (path.Count-1);
 		lastPointInPath = o;
@@ -40,12 +46,11 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	}
 
 	public bool doIknowWhereFruitIs(){
-		return fruitPosition != Vector3.zero;
+		return fruitPosition.Count > 0;
 	}
 
 	public bool canIgoHere(Vector3 currentPosition,Vector3 destination){
 		float angle = Vector3.Angle (currentPosition - lastPointInPath, destination - currentPosition);
-		//Debug.Log ("Angle is:" + angle.ToString ());
 		return  angle < 90F && doesntBelongToPath(destination);
 	}
 
@@ -56,11 +61,14 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		return true;
 	}
 
-	public void eatenFruit(){
-		this.fruitPosition = Vector3.zero;
+	public void eatenFruit(GameObject f){
+		this.fruitPosition.Remove (f);
 	}
 
 	public bool isPersitentDestination(){
+
+		if (path == null)
+			return false;
 		int count = 0;
 		Vector3 last = path[path.Count-1];
 		for (int i = 2; i < path.Count/5; i++) {
