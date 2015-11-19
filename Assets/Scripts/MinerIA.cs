@@ -19,11 +19,10 @@ public class MinerIA: MonoBehaviour
 
     enum state
     {
-        Birth,
         RandomDig,
+        TunelDig,
         RhombusDig,
-        SquareDig,
-        TunelDig
+        SquareDig
     }
 
     public void Configure(int x, int y, MapCell[,] map, DungeonGeneratorIA dungeon)
@@ -36,10 +35,8 @@ public class MinerIA: MonoBehaviour
         pos = new int[2];
         pos[0] = x;
         pos[1] = y;
-        currentState = state.Birth;
         this.dungeon = dungeon;
-        probabilities = new float[4] { 1.0f, 1.0f, 1.0f, 1.0f };
-        StartCoroutine(FSM());
+        probabilities = new float[4] { 10.0f, 3.0f, 3.0f, 1.0f };
     }
 
     public int[] GetPos()
@@ -62,26 +59,30 @@ public class MinerIA: MonoBehaviour
 
     public void StartDigging()
     {
-        EditProbabilities(1.0f, 1.0f, 1.0f, 1.0f);
         CompileRulette();
+        StartCoroutine(FSM());
     }
 
     void CompileRulette()
     {
-        //generar código
-    }
+        float total = 0;
+        int i;
+        for (i = 0; i < probabilities.Length; i++) total += probabilities[i];
+        float winner = Random.Range(0, total);
 
-    void EditProbabilities(float RandomDig, float RhombusDig, float SquareDig, float TunelDig)
-    {
-
-    }
-
-    IEnumerator Birth()
-    {
-        while(currentState == state.Birth)
+        float sum = 0;
+        for (i = 0; i < probabilities.Length; i++)
         {
-            yield return 0;
+            sum += probabilities[i];
+            if (sum > winner)
+                break;
         }
+        ChangeState((state)i);
+        //ChangeState(state.RhombusDig);
+    }
+
+    void EditProbabilities(state stateCaller)
+    {
         
     }
 
@@ -101,7 +102,7 @@ public class MinerIA: MonoBehaviour
             pos = newPos;
 
             DigPosition();
-            //EditProbabilities(Ran);
+            //EditProbabilities();
             CompileRulette();
             yield return 0;
         }
@@ -111,7 +112,7 @@ public class MinerIA: MonoBehaviour
     {
         while (currentState == state.RhombusDig)
         {
-            int maxRadius = GenerateRandomRadius(); //controlar que no se sale del mapa
+            int maxRadius = GenerateRandomRadius();
 
             int actualRadius = 0;
             int[] rhombusCenter = new int[] { pos[0], pos[1] };
@@ -178,17 +179,73 @@ public class MinerIA: MonoBehaviour
 
     IEnumerator SquareDig()
     {
-        yield return 0;
+        while (currentState == state.SquareDig)
+        {
+            int maxRadius = GenerateRandomRadius();
+
+            int actualRadius = 0;
+            int[] squareCenter = new int[] { pos[0], pos[1] };
+
+            while (actualRadius < maxRadius)
+            {
+                actualRadius++;
+                //cara norte
+                pos = new int[] { squareCenter[0] - actualRadius, squareCenter[1] - actualRadius }; //posicion inicial para giro en espiral
+                for (int i = 0; i < actualRadius*2; i++)
+                {
+                    pos[0] += 1;
+
+                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
+
+                    DigPosition();
+                    yield return 0;
+                }
+                //cara este
+                pos = new int[] { squareCenter[0] + actualRadius, squareCenter[1] - actualRadius };
+                for (int i = 0; i < actualRadius*2; i++)
+                {
+                    pos[1] += 1;
+
+                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
+
+                    DigPosition();
+                    yield return 0;
+                }
+                //cara sur
+                pos = new int[] { squareCenter[0] + actualRadius, squareCenter[1] + actualRadius };
+                for (int i = 0; i < actualRadius*2; i++)
+                {
+                    pos[0] -= 1;
+
+                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
+
+                    DigPosition();
+                    yield return 0;
+                }
+                //cara oeste
+                pos = new int[] { squareCenter[0] - actualRadius, squareCenter[1] + actualRadius };
+                for (int i = 0; i < actualRadius*2; i++)
+                {
+                    pos[1] -= 1;
+
+                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
+
+                    DigPosition();
+                    yield return 0;
+                }
+            }
+            CompileRulette();
+            yield return 0;
+        }
     }
 
     IEnumerator TunelDig()
     {
-        
         while (currentState == state.TunelDig)
         {
             int[] direction = GetRandomDirection();
             int tunelLength = GenerateRandomLength(direction); //controlar que no se salga
-            for (; tunelLength > 0; tunelLength--)
+            for (int i = 0; i< tunelLength ; i++)
             {
                 pos[0] += direction[0];
                 pos[1] += direction[1];
@@ -198,6 +255,7 @@ public class MinerIA: MonoBehaviour
             }
             //editar probabilidades
             CompileRulette();
+            yield return 0;
         }
     }
 
@@ -220,10 +278,9 @@ public class MinerIA: MonoBehaviour
         int[] finalPosition;
         do
         {
-            randomLength = Random.Range(0, 15);
+            randomLength = Random.Range(0, 20);
             finalPosition = new int[2] {pos[0] + direction[0]*randomLength ,pos[1] + direction[1]*randomLength };
-        } while ((finalPosition[0] <= 0) || (finalPosition[0] >= mapWidth-1) || (finalPosition[1] >= mapHeight-1) || (finalPosition[1] <= 0));
-        Debug.Log("Posición final --> " + finalPosition[0] + ", " + finalPosition[1]);
+        } while ((finalPosition[0] < 1) || (finalPosition[0] > mapWidth) || (finalPosition[1] > mapHeight) || (finalPosition[1] < 1));
         return randomLength;
     }
 
@@ -232,8 +289,8 @@ public class MinerIA: MonoBehaviour
         int randomRadius;
         do
         {
-            randomRadius = Random.Range(0, 10);
-        } while ((randomRadius > mapWidth - pos[0]) || (randomRadius > mapHeight - pos[1]));
+            randomRadius = Random.Range(0, 4);
+        } while ((randomRadius+pos[0] > mapWidth ) || (pos[0] - randomRadius < 1) || ((pos[1] - randomRadius < 1)) ||  (randomRadius+pos[1] > mapHeight));
         return randomRadius;
     }
 
@@ -289,7 +346,7 @@ public class MinerIA: MonoBehaviour
     {
         int direction = (Random.value < 0.5f) ? -1 : 1;
         int tmpPos = pos[0];
-        while (tmpPos < mapWidth && tmpPos > 0)
+        while (tmpPos < mapWidth-1 && tmpPos > 0)
         {
             if (map[tmpPos, pos[1]].cellKind <= MapCell.CellKind.WALL)
                 return new int[] { tmpPos, pos[1] };
