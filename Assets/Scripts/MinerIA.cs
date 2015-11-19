@@ -36,7 +36,7 @@ public class MinerIA: MonoBehaviour
         pos[0] = x;
         pos[1] = y;
         this.dungeon = dungeon;
-        probabilities = new float[4] { 10.0f, 3.0f, 3.0f, 1.0f };
+        probabilities = new float[4] { 8.0f, 3.0f, 3.0f, 1.0f };
     }
 
     public int[] GetPos()
@@ -78,12 +78,6 @@ public class MinerIA: MonoBehaviour
                 break;
         }
         ChangeState((state)i);
-        //ChangeState(state.RhombusDig);
-    }
-
-    void EditProbabilities(state stateCaller)
-    {
-        
     }
 
     IEnumerator RandomDig()
@@ -102,7 +96,6 @@ public class MinerIA: MonoBehaviour
             pos = newPos;
 
             DigPosition();
-            //EditProbabilities();
             CompileRulette();
             yield return 0;
         }
@@ -127,9 +120,7 @@ public class MinerIA: MonoBehaviour
                     pos[0] -= 1;
                     pos[1] += 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //diagonal sureste
@@ -139,9 +130,7 @@ public class MinerIA: MonoBehaviour
                     pos[0] -= 1;
                     pos[1] -= 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //diagonal suroeste
@@ -151,9 +140,7 @@ public class MinerIA: MonoBehaviour
                     pos[0] += 1;
                     pos[1] -= 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //diagonal noroeste
@@ -163,13 +150,10 @@ public class MinerIA: MonoBehaviour
                     pos[0] += 1;
                     pos[1] += 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
             }
-            //editar probabilidades
             CompileRulette();
             yield return 0;
 
@@ -195,9 +179,7 @@ public class MinerIA: MonoBehaviour
                 {
                     pos[0] += 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //cara este
@@ -206,9 +188,7 @@ public class MinerIA: MonoBehaviour
                 {
                     pos[1] += 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //cara sur
@@ -217,9 +197,7 @@ public class MinerIA: MonoBehaviour
                 {
                     pos[0] -= 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
                 //cara oeste
@@ -228,9 +206,7 @@ public class MinerIA: MonoBehaviour
                 {
                     pos[1] -= 1;
 
-                    if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-
-                    DigPosition();
+                    if (!DigPosition()) continue;
                     yield return 0;
                 }
             }
@@ -249,11 +225,9 @@ public class MinerIA: MonoBehaviour
             {
                 pos[0] += direction[0];
                 pos[1] += direction[1];
-                if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) continue;
-                DigPosition();
+                if (!DigPosition()) continue;
                 yield return 0;
             }
-            //editar probabilidades
             CompileRulette();
             yield return 0;
         }
@@ -261,15 +235,29 @@ public class MinerIA: MonoBehaviour
 
     int[] GetRandomDirection()
     {
-        int value;
+        if (Random.value < 0.6f)
+        {
+            int[] gravityCenter = dungeon.getCenterOfGravity();
+            if(Mathf.Abs(pos[0]-gravityCenter[0]) > Mathf.Abs(pos[1] - gravityCenter[1]) && ((pos[0] - gravityCenter[0])!= 0) )
+            {
+                return new int[] { (pos[0] - gravityCenter[0]) / Mathf.Abs(pos[0] - gravityCenter[0]), 0 };
+            }
+            else if ((pos[1] - gravityCenter[1] != 0))
+            {
+                return new int[] { 0 , (pos[1] - gravityCenter[1]) / Mathf.Abs(pos[1] - gravityCenter[1]) };
+            }
+        }
+
+        int direction;
         if (Random.value < 0.5f)
-            value = 1;
+            direction = 1;
         else
-            value = -1;
+            direction = -1;
         if (Random.value < 0.5f)
-            return new int[] { value, 0 };
+            return new int[] { direction, 0 };
         else
-            return new int[] { 0, value };
+            return new int[] { 0, direction };
+
     }
 
     int GenerateRandomLength(int[] direction)
@@ -289,15 +277,18 @@ public class MinerIA: MonoBehaviour
         int randomRadius;
         do
         {
-            randomRadius = Random.Range(0, 4);
+            randomRadius = Random.Range(0, 5);
         } while ((randomRadius+pos[0] > mapWidth ) || (pos[0] - randomRadius < 1) || ((pos[1] - randomRadius < 1)) ||  (randomRadius+pos[1] > mapHeight));
         return randomRadius;
     }
 
-    void DigPosition()
+    bool DigPosition()
     {
+        if (map[pos[0], pos[1]].cellKind == MapCell.CellKind.WALKABLE) return false;
+
         map[pos[0], pos[1]].cellKind = MapCell.CellKind.WALKABLE;
         dungeon.CellDigged();
+        return true;
     }
 
     int[] RandomMove()

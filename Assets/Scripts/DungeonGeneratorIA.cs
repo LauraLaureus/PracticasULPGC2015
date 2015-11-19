@@ -42,7 +42,7 @@ public class DungeonGeneratorIA : MonoBehaviour
         
 
         miners = new List<MinerIA>();
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 4; i++)
         {            
             MinerIA miner = gameObject.AddComponent<MinerIA>();
             miner.Configure(width / 2, height / 2, map, this);
@@ -467,6 +467,20 @@ public class DungeonGeneratorIA : MonoBehaviour
 
             ToolChain();
         }
+    }
+
+    public int[] getCenterOfGravity()
+    {
+        int[] gravityCenter = new int[2] { 0, 0 };
+        for (int i = 0; i < miners.Count; i++)
+        {
+            int[] posMiner = miners[i].GetPos();
+            gravityCenter[0] += posMiner[0];
+            gravityCenter[1] += posMiner[1];
+        }
+        gravityCenter[0] = gravityCenter[0] / miners.Count;
+        gravityCenter[1] = gravityCenter[1] / miners.Count;
+        return gravityCenter;
     }
 
     void Update()
