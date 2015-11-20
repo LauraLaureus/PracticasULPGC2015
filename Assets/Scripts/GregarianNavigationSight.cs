@@ -18,8 +18,10 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 	void FixedUpdate () {
 
-		Vector3 destination;
-		if (fsm.amIHungry () && mem.CountMemories () > 0 && mem.doIknowWhereFruitIs ()) {
+		Vector3 destination; //añadir que el destino no coincide con una fruta!!
+        if (mem.doIknowWhereFruitIs() && agent.destination == mem.getFruit() && agent.remainingDistance < 0.7f) {
+            destination = (agent.destination - this.gameObject.transform.position).normalized * sightDistance;
+        }else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
 			destination = mem.getFruit ();
 		} else if (mem.isPersitentDestination()) {
 			Debug.Log("is Persistent");
@@ -33,6 +35,10 @@ public class GregarianNavigationSight : MonoBehaviour {
 				return;
 		}
 
+        if (mem.isCloseInPath(destination)) {
+            Debug.Log("I think I have already been there, :/");
+            return;
+        }
 
 		mem.setNewPointInPath (destination);
 		agent.SetDestination (destination);
@@ -75,23 +81,23 @@ public class GregarianNavigationSight : MonoBehaviour {
 
        
 		if (right.magnitude < sightDistance / 3f) {
-            Debug.Log("Right distance =" + right.magnitude.ToString());
+            //Debug.Log("Right distance =" + right.magnitude.ToString());
 			right = Vector3.zero;
 		}
 
         
 		if (left.magnitude < sightDistance / 3f) {
-            Debug.Log("Left distance =" + right.magnitude.ToString());
+            //Debug.Log("Left distance =" + right.magnitude.ToString());
 			left = Vector3.zero;
 		}
 
 		if (forward.magnitude < sightDistance / 3f ) {
 			if(right.magnitude < 0.1f && left.magnitude <0.1f){
-				Debug.Log("To Icengard");
+				//Debug.Log("To Icengard");
 				//return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
 				gameObject.transform.LookAt((gameObject.transform.forward+Vector3.right));
             } 
-            Debug.Log("Forward distance =" + right.magnitude.ToString());
+            //Debug.Log("Forward distance =" + right.magnitude.ToString());
 			forward = Vector3.zero;
 		}
 
@@ -104,10 +110,10 @@ public class GregarianNavigationSight : MonoBehaviour {
 				Debug.Log ("To Pueblo Paleta");
 				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
 			}*/
-            Debug.Log("To The Thought Corner");
+            //Debug.Log("To The Thought Corner");
             return (gameObject.transform.position - mem.getLastPointIStayed()).normalized * sightDistance;
 		}
-        Debug.Log("Suma de las tres direcciones:" + (forward + left + right).magnitude.ToString());
+        //Debug.Log("Suma de las tres direcciones:" + (forward + left + right).magnitude.ToString());
 		return (forward + left + right);
 
 

@@ -76,4 +76,12 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		}
 		return count > 5;
 	}
+
+    public bool isCloseInPath(Vector3 v) {
+        for (int i = 0; i < path.Count / 5; i++)
+        {
+            if (path[path.Count - i - 1] == v) return true;
+        }
+        return false;
+    }
 }
