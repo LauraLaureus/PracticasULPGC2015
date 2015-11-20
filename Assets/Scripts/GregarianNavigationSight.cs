@@ -53,16 +53,18 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 		Physics.Raycast (whereIam, whereIamLooking, out hit);
 		forward = hit.point - whereIam;
-
+        Debug.DrawRay(whereIam, forward, Color.grey,1f);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.right, out hit);
 		right = hit.point-whereIam;
-
+        Debug.DrawRay(whereIam, right, Color.grey,1f);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.left, out hit);
 		left = hit.point-whereIam;
-
-		result = computateDestinationInSight (forward,right, left);
+        Debug.DrawRay(whereIam, left, Color.grey,1f);
+		
+        result = computateDestinationInSight (forward,right, left);
+        Debug.DrawRay(whereIam, forward, Color.white,1f);
 
 		return result+whereIam;
 	}
@@ -71,11 +73,15 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 		/*Control de que evtar paredes*/
 
+       
 		if (right.magnitude < sightDistance / 3f) {
+            Debug.Log("Right distance =" + right.magnitude.ToString());
 			right = Vector3.zero;
 		}
 
+        
 		if (left.magnitude < sightDistance / 3f) {
+            Debug.Log("Left distance =" + right.magnitude.ToString());
 			left = Vector3.zero;
 		}
 
@@ -84,21 +90,24 @@ public class GregarianNavigationSight : MonoBehaviour {
 				Debug.Log("To Icengard");
 				//return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
 				gameObject.transform.LookAt((gameObject.transform.forward+Vector3.right));
-			}
+            } 
+            Debug.Log("Forward distance =" + right.magnitude.ToString());
 			forward = Vector3.zero;
 		}
 
 		if ((forward + left + right).magnitude < 0.1f) {
-			NavMeshHit hit;
+			/*NavMeshHit hit;
 			if(NavMesh.SamplePosition(gameObject.transform.position, out hit, 2f*sightDistance,NavMesh.AllAreas)){
 				Debug.Log("To DigitalWorld");
 				return hit.position;
 			}else{
 				Debug.Log ("To Pueblo Paleta");
 				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
-			}
+			}*/
+            Debug.Log("To The Thought Corner");
+            return (gameObject.transform.position - mem.getLastPointIStayed()).normalized * sightDistance;
 		}
-
+        Debug.Log("Suma de las tres direcciones:" + (forward + left + right).magnitude.ToString());
 		return (forward + left + right);
 
 

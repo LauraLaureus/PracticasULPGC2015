@@ -59,8 +59,11 @@ public class GregarianFSM : MonoBehaviour {
 	}
 	
 	IEnumerator Evaluate(){
-		
-		if (foundEnemys ()) {
+        if (hunger > 10 * hungerBoundary) {
+            Debug.Log("Me muero de hambre");
+            DestroyObject(this.gameObject);
+        }
+		else if (foundEnemys ()) {
 			state = GregarianStates.Flee;
 		} else if (amIHungry() && mem.doIknowWhereFruitIs()) {
 			state = GregarianStates.ChasingFruit;
