@@ -18,27 +18,26 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 	void FixedUpdate () {
 
-		Vector3 destination; //añadir que el destino no coincide con una fruta!!
-        if (mem.doIknowWhereFruitIs() && agent.destination == mem.getFruit() && agent.remainingDistance < 0.7f) {
-            destination = (agent.destination - this.gameObject.transform.position).normalized * sightDistance;
-        }else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
-			destination = mem.getFruit ();
-		} else if (mem.isPersitentDestination()) {
-			Debug.Log("is Persistent");
+
+		Vector3 destination = agent.destination; //añadir que el destino no coincide con una fruta!!
+		if (Vector3.Angle (destination - this.transform.position, this.transform.forward) > 90f) {
 			destination = takeAPhysicalNavigableLook();
 		}
-		else {
-			if(!agent.hasPath || agent.remainingDistance < 1.1f)
-				destination = takeAPhysicalNavigableLook();
-			else
-				//destination = agent.destination;
+		else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
+		
+			if ((agent.destination - mem.getFruit ()).sqrMagnitude < 0.01f) {
 				return;
+			} else {
+				destination = mem.getFruit ();
+			}
+		} else if (agent.remainingDistance < 0.01f) { 
+			destination = takeAPhysicalNavigableLook ();
+		} else if (!agent.hasPath) {
+			destination = takeAPhysicalNavigableLook ();
+		} else {
+			return;
 		}
 
-        if (mem.isCloseInPath(destination)) {
-            Debug.Log("I think I have already been there, :/");
-            return;
-        }
 
 		mem.setNewPointInPath (destination);
 		agent.SetDestination (destination);
@@ -93,8 +92,6 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 		if (forward.magnitude < sightDistance / 3f ) {
 			if(right.magnitude < 0.1f && left.magnitude <0.1f){
-				//Debug.Log("To Icengard");
-				//return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
 				gameObject.transform.LookAt((gameObject.transform.forward+Vector3.right));
             } 
             //Debug.Log("Forward distance =" + right.magnitude.ToString());
@@ -102,15 +99,6 @@ public class GregarianNavigationSight : MonoBehaviour {
 		}
 
 		if ((forward + left + right).magnitude < 0.1f) {
-			/*NavMeshHit hit;
-			if(NavMesh.SamplePosition(gameObject.transform.position, out hit, 2f*sightDistance,NavMesh.AllAreas)){
-				Debug.Log("To DigitalWorld");
-				return hit.position;
-			}else{
-				Debug.Log ("To Pueblo Paleta");
-				return (gameObject.transform.position-mem.getLastPointIStayed()).normalized*sightDistance;
-			}*/
-            //Debug.Log("To The Thought Corner");
             return (gameObject.transform.position - mem.getLastPointIStayed()).normalized * sightDistance;
 		}
         //Debug.Log("Suma de las tres direcciones:" + (forward + left + right).magnitude.ToString());
