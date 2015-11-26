@@ -22,9 +22,6 @@ public class GregarianNavigationSight : MonoBehaviour {
 		Vector3 destination = agent.destination; //añadir que el destino no coincide con una fruta!!
         if (Vector3.Angle(destination - this.transform.position, this.transform.forward) > 90f)
         {
-            Debug.Log("Mi destino está detras mía.");
-            /*destination = takeAPhysicalNavigableLook();
-            agent.SetDestination(destination);*/
             this.gameObject.transform.LookAt(destination);
             return;
         }
@@ -39,13 +36,10 @@ public class GregarianNavigationSight : MonoBehaviour {
 				destination = mem.getFruit ();
 			}
 		} else if (fsm.amIWandering()) { 
-            Debug.Log("Uptwon walk");
 			destination = takeAPhysicalNavigableLook ();
 		} else if (!agent.hasPath) {
-            Debug.Log("¿A donde voy?");
 			destination = takeAPhysicalNavigableLook ();
 		} else {
-            Debug.Log("Ninguna de las anteriores");
 			return;
 		}
 
@@ -69,18 +63,18 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 		Physics.Raycast (whereIam, whereIamLooking, out hit);
 		forward = hit.point - whereIam;
-        Debug.DrawRay(whereIam, forward, Color.grey,1f);
+        Debug.DrawRay(whereIam, forward, Color.grey);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.right, out hit);
 		right = hit.point-whereIam;
-        Debug.DrawRay(whereIam, right, Color.grey,1f);
+        Debug.DrawRay(whereIam, right, Color.grey);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.left, out hit);
 		left = hit.point-whereIam;
-        Debug.DrawRay(whereIam, left, Color.grey,1f);
+        Debug.DrawRay(whereIam, left, Color.grey);
 		
         result = computateDestinationInSight (forward,right, left);
-        Debug.DrawRay(whereIam, forward, Color.white,1f);
+        Debug.DrawRay(whereIam, forward, Color.white);
 
 		return result+whereIam;
 	}
@@ -118,11 +112,6 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 	}
 
-
-	/*bool isNavigable(Vector3 origin, Vector3 destination){
-		NavMeshHit hit;
-		return !NavMesh.Raycast (origin,destination,out hit,NavMesh.AllAreas);
-	}*/
 
 	public void eatenFruit(GameObject f){
 		mem.eatenFruit (f);
