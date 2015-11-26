@@ -86,4 +86,8 @@ public class GregarianFSM : MonoBehaviour {
 		return hunger > hungerBoundary;
 	}
 
+    public bool amIWandering() {
+        return this.state == GregarianStates.Wandering || this.state == GregarianStates.Evaluate;
+    }
+
 }

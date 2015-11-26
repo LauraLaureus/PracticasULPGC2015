@@ -20,21 +20,32 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 
 		Vector3 destination = agent.destination; //añadir que el destino no coincide con una fruta!!
-		if (Vector3.Angle (destination - this.transform.position, this.transform.forward) > 90f) {
-			destination = takeAPhysicalNavigableLook();
-		}
-		else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
+        if (Vector3.Angle(destination - this.transform.position, this.transform.forward) > 90f)
+        {
+            Debug.Log("Mi destino está detras mía.");
+            /*destination = takeAPhysicalNavigableLook();
+            agent.SetDestination(destination);*/
+            this.gameObject.transform.LookAt(destination);
+            return;
+        }
+        
+        if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
 		
 			if ((agent.destination - mem.getFruit ()).sqrMagnitude < 0.01f) {
+                Debug.Log("Estoy cerca de la comida");
 				return;
 			} else {
+                Debug.Log("Tengo hambre mamá");
 				destination = mem.getFruit ();
 			}
-		} else if (agent.remainingDistance < 0.01f) { 
+		} else if (fsm.amIWandering()) { 
+            Debug.Log("Uptwon walk");
 			destination = takeAPhysicalNavigableLook ();
 		} else if (!agent.hasPath) {
+            Debug.Log("¿A donde voy?");
 			destination = takeAPhysicalNavigableLook ();
 		} else {
+            Debug.Log("Ninguna de las anteriores");
 			return;
 		}
 
