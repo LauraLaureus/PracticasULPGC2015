@@ -25,6 +25,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	}
 
 	public Vector3 getFruit(){
+        
 		return fruitPosition[fruitPosition.Count-1].transform.position;
 	}
 
@@ -46,6 +47,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	}
 
 	public bool doIknowWhereFruitIs(){
+        deleteNullObjects();
 		return fruitPosition.Count > 0;
 	}
 
@@ -76,4 +78,20 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		}
 		return count > 5;
 	}
+
+    public bool isCloseInPath(Vector3 v) {
+        for (int i = 0; i < path.Count / 5; i++)
+        {
+            if (path[path.Count - i - 1] == v) return true;
+        }
+        return false;
+    }
+
+    private void deleteNullObjects() {
+        for (int i = fruitPosition.Count - 1; i > 0; i++) {
+            if (fruitPosition[i] == null) {
+                fruitPosition.RemoveAt(i);
+            }
+        }
+    }
 }
