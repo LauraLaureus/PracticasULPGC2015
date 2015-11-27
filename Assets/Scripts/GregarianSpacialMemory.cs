@@ -25,7 +25,8 @@ public class GregarianSpacialMemory : MonoBehaviour {
 	}
 
 	public Vector3 getFruit(){
-        
+        deleteNullObjects();
+        if (fruitPosition[fruitPosition.Count - 1] == null) return this.gameObject.transform.position;
 		return fruitPosition[fruitPosition.Count-1].transform.position;
 	}
 
@@ -37,12 +38,12 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		lastPointInPath = o;
 		path.Add(o);
 	}
-
+    /*
 	public int CountMemories(){
 		return path.Count;
-	}
+	}*/
 
-	public Vector3 getLastPointIStayed(){
+    public Vector3 getLastPointIStayed(){
 		return path [path.Count-1];
 	}
 
@@ -50,7 +51,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
         deleteNullObjects();
 		return fruitPosition.Count > 0;
 	}
-
+    /*
 	public bool canIgoHere(Vector3 currentPosition,Vector3 destination){
 		float angle = Vector3.Angle (currentPosition - lastPointInPath, destination - currentPosition);
 		return  angle < 90F && doesntBelongToPath(destination);
@@ -61,12 +62,12 @@ public class GregarianSpacialMemory : MonoBehaviour {
 			if (v == point) return false;
 		}
 		return true;
-	}
+	}*/
 
 	public void eatenFruit(GameObject f){
 		this.fruitPosition.Remove (f);
 	}
-
+    /*
 	public bool isPersitentDestination(){
 
 		if (path == null)
@@ -85,10 +86,11 @@ public class GregarianSpacialMemory : MonoBehaviour {
             if (path[path.Count - i - 1] == v) return true;
         }
         return false;
-    }
+    }*/
 
-    private void deleteNullObjects() {
-        for (int i = fruitPosition.Count - 1; i > 0; i++) {
+    public void deleteNullObjects() {
+        if (fruitPosition.Count == 0) return;
+        for (int i = fruitPosition.Count - 1; i > 0; i--) {
             if (fruitPosition[i] == null) {
                 fruitPosition.RemoveAt(i);
             }

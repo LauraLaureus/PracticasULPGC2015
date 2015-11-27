@@ -18,7 +18,7 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 	void FixedUpdate () {
 
-
+        mem.deleteNullObjects(); 
 		Vector3 destination = agent.destination; //añadir que el destino no coincide con una fruta!!
         if (Vector3.Angle(destination - this.transform.position, this.transform.forward) > 90f)
         {

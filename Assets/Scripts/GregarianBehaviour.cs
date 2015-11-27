@@ -37,7 +37,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		steeringForce += GregarianWeights.w_inercia * steeringForce;
 		Debug.DrawLine (this.transform.position,this.transform.position+steeringForce, Color.green);
 
-		steeringForce +=  0.001f*randomVector();
+		steeringForce +=  GregarianWeights.w_random*randomVector();
 
 		steeringForce += calculateNavigationVector ()* GregarianWeights.w_navigation;
 		steeringForce += calculateSeparationVector (hits) *GregarianWeights.w_separation;
