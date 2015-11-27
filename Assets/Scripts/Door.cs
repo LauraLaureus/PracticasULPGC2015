@@ -34,4 +34,10 @@ public class Door {
 		else
 			this.zoneTo = (map[x, y - 1].zoneID == zoneFrom) ? map[x, y + 1].zoneID : map[x, y - 1].zoneID;
 	}
+
+    public bool compareWith(Door doorComp)
+    {
+        if ((doorComp.x == x) && (doorComp.y == y)) return true;
+        return false;
+    }
 }

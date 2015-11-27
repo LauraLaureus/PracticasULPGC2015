@@ -6,7 +6,7 @@ using UnityEditor;
 public class DungeonGeneratorIA : MonoBehaviour
 {
 
-    public delegate void MapGenerated(MapCell[,] map, Door doors);
+    public delegate void MapGenerated(MapCell[,] map, List<Door> doors);
     public static event MapGenerated OnMapCreated;
 
     public delegate void MapGeneratedForIAs(List<Door> ds, int w, int h);
@@ -22,6 +22,7 @@ public class DungeonGeneratorIA : MonoBehaviour
     int diggedAmount = 0;
     List<MinerIA> miners;
     bool minersAlive = false;
+    List<int[]> rooms;
 
     void Start()
     {
@@ -42,7 +43,7 @@ public class DungeonGeneratorIA : MonoBehaviour
         
 
         miners = new List<MinerIA>();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 1; i++)
         {            
             MinerIA miner = gameObject.AddComponent<MinerIA>();
             miner.Configure(width / 2, height / 2, map, this);
@@ -98,6 +99,8 @@ public class DungeonGeneratorIA : MonoBehaviour
                     UpdateVisualMap(i, j, Color.gray);
                 else
                     UpdateVisualMap(i, j, Color.white);
+                if (map[i, j].isRock)
+                    UpdateVisualMap(i, j, Color.green);
             }
         }
     }
@@ -109,6 +112,16 @@ public class DungeonGeneratorIA : MonoBehaviour
             int[] pos = miners[i].GetPos();
             UpdateVisualMap(pos[0], pos[1], Color.blue);
         }
+    }
+
+    public int[][] GetMinersPos()
+    {
+        int[][] result = new int[miners.Count] [];
+        for (int i = 0; i < miners.Count; i++)
+        {
+            result[i] = miners[i].GetPos();
+        }
+        return result;
     }
 
     void CleanMap()
@@ -313,9 +326,19 @@ public class DungeonGeneratorIA : MonoBehaviour
                 break;
         }
 
-        //eliminamos puertas que dan a la misma zona
+        //eliminamos puertas que dan a la misma zona y las duplicadas
         for (int i = 0; i < doors.Count; i++)
         {
+            //puertas repetidas
+            for (int j = i + 1; j < doors.Count; j++)
+            {
+                if (doors[i].compareWith(doors[j]))
+                {
+                    doors.RemoveAt(j);
+                    j--;
+                }
+            }
+            //puertas a la misma zona
             int x = doors[i].x;
             int y = doors[i].y;
             if (doors[i].doorDirection == 0)
@@ -338,6 +361,7 @@ public class DungeonGeneratorIA : MonoBehaviour
                     i--;
                 }
             }
+
         }
 
         Debug.Log("Zonas: " + (zones.Count));
@@ -367,22 +391,22 @@ public class DungeonGeneratorIA : MonoBehaviour
 
     void ToolChain()
     {
-        Door selected = selectDoor();
-        selected.translateInto(width, height);
-        //Debug.Log ("Puerta:" + selected.x + " " + selected.y);
-
+        traslateDoors();
 
         if (OnMapCreated != null)
-            OnMapCreated(map, selected);
-        doors.Remove(selected);
+            OnMapCreated(map, doors);
+
+        //Reciclar para spawners
         if (OnLiveNeeded != null)
             OnLiveNeeded(doors, width, height);
     }
 
-    Door selectDoor()
+    void traslateDoors()
     {
-        int index = (int)Random.value * doors.Count;
-        return doors[index];
+        for (int i = 0; i<doors.Count; i++)
+        {
+            doors[i].translateInto(width, height);
+        }
     }
 
 
@@ -456,12 +480,12 @@ public class DungeonGeneratorIA : MonoBehaviour
         if (diggedAmount > width * height * 0.25f)
         {
             StopDigging();
-            
+
             CleanMap();
 
-            List<int[]> zones = DefineRooms();
+            rooms = DefineRooms();
 
-            PaintZones(zones);
+            PaintZones(rooms);
 
             ShowMap();
 
