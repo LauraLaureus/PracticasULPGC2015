@@ -5,7 +5,8 @@ public class GregarianSpacialMemory : MonoBehaviour {
 
 	private List<GameObject> fruitPosition;
 	private List<Vector3> path;
-	private Vector3 lastPointInPath;
+	private List<GameObject> closeEnemies;
+
 	public int pathPointsRetention;
 
 	public void OnEnable(){
@@ -13,6 +14,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		path = new List<Vector3> ();
 		path.Add (this.gameObject.transform.position);
 		pathPointsRetention = 10;
+		closeEnemies = new List<GameObject> ();
 	}
 
 	public void setFruit(GameObject f){
@@ -35,7 +37,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 			return;
 		if (path.Count > pathPointsRetention)
 			path.RemoveAt (path.Count-1);
-		lastPointInPath = o;
+	
 		path.Add(o);
 	}
     
@@ -56,13 +58,36 @@ public class GregarianSpacialMemory : MonoBehaviour {
 
     public void deleteNullObjects() {
         if (fruitPosition.Count == 0) return;
-		Debug.Log ("Antes de eliminar había:" + fruitPosition.Count.ToString ());
         for (int i = fruitPosition.Count - 1; i >= 0; i--) {
             if (fruitPosition[i] == null) {
-				Debug.Log ("Se eliminó algo");
                 fruitPosition.RemoveAt(i);
             }
         }
-		Debug.Log ("Después de eliminar había:" + fruitPosition.Count.ToString ());
     }
+
+	public void setCloseEnemy(GameObject g){
+		//Si g ya está en la lista no hacer nada
+		if (closeEnemies.Contains (g))
+			return;
+		else
+			closeEnemies.Add (g);
+	}
+
+	public bool areEnemiesClose(){
+		deleteNonCloseEnemies ();
+		return closeEnemies.Count > 0;
+	}
+
+	private void deleteNonCloseEnemies(){
+		for (int i = closeEnemies.Count -1; i >=0; i--) {
+			if((closeEnemies[i].transform.position-gameObject.transform.position).sqrMagnitude > 2){
+				closeEnemies.RemoveAt(i);
+			}
+		}
+	}
+
+	public GameObject getCloseEnemy(){
+		return closeEnemies [closeEnemies.Count - 1];
+	}
+
 }

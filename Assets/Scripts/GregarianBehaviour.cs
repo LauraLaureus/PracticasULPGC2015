@@ -8,6 +8,7 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Rigidbody rb;
 	private NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
+	private GregarianSpacialMemory mem;
 
 
 
@@ -16,7 +17,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
 		StartCoroutine(this.gameObject.GetComponent<GregarianFSM> ().StartFSM ());
-		//StartCoroutine (startFSM());
+		mem = gameObject.GetComponent<GregarianSpacialMemory> ();
 	}
 
 	void OnTriggerEnter(Collider other){
@@ -32,10 +33,10 @@ public class GregarianBehaviour : MonoBehaviour {
 	void FixedUpdate () {
 	
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 4f, Vector3.forward);
-		Debug.DrawLine (this.transform.position,this.transform.position+this.transform.forward, Color.blue);
+		//Debug.DrawLine (this.transform.position,this.transform.position+this.transform.forward, Color.blue);
 
 		steeringForce += GregarianWeights.w_inercia * steeringForce;
-		Debug.DrawLine (this.transform.position,this.transform.position+steeringForce, Color.green);
+		//Debug.DrawLine (this.transform.position,this.transform.position+steeringForce, Color.green);
 
 		steeringForce +=  GregarianWeights.w_random*randomVector();
 
@@ -70,7 +71,7 @@ public class GregarianBehaviour : MonoBehaviour {
 				result += toGregarian.normalized * towardsMateWeight;
 			}
 		}
-		Debug.DrawLine (this.transform.position,this.transform.position+result,Color.yellow);
+		//Debug.DrawLine (this.transform.position,this.transform.position+result,Color.yellow);
 
 		return result;
 	}
@@ -93,7 +94,7 @@ public class GregarianBehaviour : MonoBehaviour {
 
 	Vector3 calculateNavigationVector(){
 		Vector3 result = this.navMeshAgent.steeringTarget;
-		Debug.DrawLine (this.transform.position,result,Color.magenta);
+		//Debug.DrawLine (this.transform.position,result,Color.magenta);
 		return result - this.transform.position;
 	}
 
@@ -118,7 +119,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		}
 
 		result /= count;
-		Debug.DrawLine(this.transform.position, this.transform.position + result , Color.cyan);
+		//Debug.DrawLine(this.transform.position, this.transform.position + result , Color.cyan);
 		return result ;
 	}
 

@@ -9,5 +9,6 @@ public class GregarianWeights : MonoBehaviour {
 	public static float w_cohesion = 7f;
 	public static float w_aligment = 3f;
 	public static float w_random = 0.5f;
+	public static float w_flee = 100f;
 
 }

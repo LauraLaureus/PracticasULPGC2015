@@ -63,7 +63,7 @@ public class GregarianFSM : MonoBehaviour {
             Debug.Log("Me muero de hambre");
             DestroyObject(this.gameObject);
         }
-		else if (foundEnemys ()) {
+		else if (mem.areEnemiesClose()) {
 			state = GregarianStates.Flee;
 		} else if (amIHungry() && mem.doIknowWhereFruitIs()) {
 			state = GregarianStates.ChasingFruit;
@@ -73,14 +73,7 @@ public class GregarianFSM : MonoBehaviour {
 		yield return 0;
 	}
 	
-	bool foundEnemys(){
-		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 5f, Vector3.forward);
-		int countGregarianEnemys = 0;
-		foreach (RaycastHit h in hits) {
-			if (h.collider.gameObject.tag == "Bunny") countGregarianEnemys +=1;
-		}
-		return countGregarianEnemys > 0;
-	}
+
 
 	public bool amIHungry(){
 		return hunger > hungerBoundary;

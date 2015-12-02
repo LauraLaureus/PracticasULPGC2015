@@ -25,8 +25,12 @@ public class GregarianNavigationSight : MonoBehaviour {
             this.gameObject.transform.LookAt(destination);
             return;
         }
+
+		if (mem.areEnemiesClose ()) {
+			destination = 2*this.transform.position - mem.getCloseEnemy().transform.position;
+		}
         
-        if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
+        else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
 		
 			if ((agent.destination - mem.getFruit ()).sqrMagnitude < 0.01f) {
                 Debug.Log("Estoy cerca de la comida");
@@ -76,7 +80,19 @@ public class GregarianNavigationSight : MonoBehaviour {
         result = computateDestinationInSight (forward,right, left);
         Debug.DrawRay(whereIam, forward, Color.white);
 
+		foundEnemys ();
 		return result+whereIam;
+	}
+
+	bool foundEnemys(){
+		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, sightDistance, Vector3.forward);
+		int countGregarianEnemys = 0;
+		foreach (RaycastHit h in hits) {
+			if (h.collider.gameObject.tag == "Bunny"){
+				mem.setCloseEnemy(h.collider.gameObject);
+			}
+		}
+		return countGregarianEnemys > 0;
 	}
 
 	Vector3 computateDestinationInSight( Vector3 forward, Vector3 right,Vector3 left){
@@ -85,13 +101,11 @@ public class GregarianNavigationSight : MonoBehaviour {
 
        
 		if (right.magnitude < sightDistance / 3f) {
-            //Debug.Log("Right distance =" + right.magnitude.ToString());
 			right = Vector3.zero;
 		}
 
         
 		if (left.magnitude < sightDistance / 3f) {
-            //Debug.Log("Left distance =" + right.magnitude.ToString());
 			left = Vector3.zero;
 		}
 
@@ -99,14 +113,12 @@ public class GregarianNavigationSight : MonoBehaviour {
 			if(right.magnitude < 0.1f && left.magnitude <0.1f){
 				gameObject.transform.LookAt((gameObject.transform.forward+Vector3.right));
             } 
-            //Debug.Log("Forward distance =" + right.magnitude.ToString());
 			forward = Vector3.zero;
 		}
 
 		if ((forward + left + right).magnitude < 0.1f) {
             return (gameObject.transform.position - mem.getLastPointIStayed()).normalized * sightDistance;
 		}
-        //Debug.Log("Suma de las tres direcciones:" + (forward + left + right).magnitude.ToString());
 		return (forward + left + right);
 
 
