@@ -26,7 +26,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 
 	public Vector3 getFruit(){
         deleteNullObjects();
-        if (fruitPosition[fruitPosition.Count - 1] == null) return this.gameObject.transform.position;
+        if (fruitPosition[fruitPosition.Count - 1] == null) return path[0];
 		return fruitPosition[fruitPosition.Count-1].transform.position;
 	}
 
@@ -38,10 +38,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 		lastPointInPath = o;
 		path.Add(o);
 	}
-    /*
-	public int CountMemories(){
-		return path.Count;
-	}*/
+    
 
     public Vector3 getLastPointIStayed(){
 		return path [path.Count-1];
@@ -51,49 +48,21 @@ public class GregarianSpacialMemory : MonoBehaviour {
         deleteNullObjects();
 		return fruitPosition.Count > 0;
 	}
-    /*
-	public bool canIgoHere(Vector3 currentPosition,Vector3 destination){
-		float angle = Vector3.Angle (currentPosition - lastPointInPath, destination - currentPosition);
-		return  angle < 90F && doesntBelongToPath(destination);
-	}
-
-	private bool doesntBelongToPath(Vector3 v){
-		foreach (Vector3 point in path) {
-			if (v == point) return false;
-		}
-		return true;
-	}*/
-
+   
 	public void eatenFruit(GameObject f){
 		this.fruitPosition.Remove (f);
 	}
-    /*
-	public bool isPersitentDestination(){
-
-		if (path == null)
-			return false;
-		int count = 0;
-		Vector3 last = path[path.Count-1];
-		for (int i = 2; i < path.Count/5; i++) {
-			if(path[path.Count -i] == last) count +=1;
-		}
-		return count > 5;
-	}
-
-    public bool isCloseInPath(Vector3 v) {
-        for (int i = 0; i < path.Count / 5; i++)
-        {
-            if (path[path.Count - i - 1] == v) return true;
-        }
-        return false;
-    }*/
+   
 
     public void deleteNullObjects() {
         if (fruitPosition.Count == 0) return;
-        for (int i = fruitPosition.Count - 1; i > 0; i--) {
+		Debug.Log ("Antes de eliminar había:" + fruitPosition.Count.ToString ());
+        for (int i = fruitPosition.Count - 1; i >= 0; i--) {
             if (fruitPosition[i] == null) {
+				Debug.Log ("Se eliminó algo");
                 fruitPosition.RemoveAt(i);
             }
         }
+		Debug.Log ("Después de eliminar había:" + fruitPosition.Count.ToString ());
     }
 }
