@@ -170,6 +170,8 @@ public class MinerIA: MonoBehaviour
             int actualRadius = 0;
             int[] squareCenter = new int[] { pos[0], pos[1] };
 
+            if (maxRadius > 2)
+                dungeon.AddRoomCenter(squareCenter);
             while (actualRadius < maxRadius)
             {
                 actualRadius++;

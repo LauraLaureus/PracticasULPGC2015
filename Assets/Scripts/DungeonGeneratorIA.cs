@@ -23,6 +23,7 @@ public class DungeonGeneratorIA : MonoBehaviour
     List<MinerIA> miners;
     bool minersAlive = false;
     List<int[]> rooms;
+    List<int[]> roomsCenters;
 
     void Start()
     {
@@ -40,8 +41,8 @@ public class DungeonGeneratorIA : MonoBehaviour
                 UpdateVisualMap(i, j, Color.gray);
             }
         }
-        
 
+        roomsCenters = new List<int[]>();
         miners = new List<MinerIA>();
         for (int i = 0; i < 1; i++)
         {            
@@ -409,7 +410,10 @@ public class DungeonGeneratorIA : MonoBehaviour
         }
     }
 
-
+    public void AddRoomCenter(int[] roomCenter)
+    {
+        roomsCenters.Add(roomCenter);
+    }
 
 
     void MergeZone(int oldZoneLabel, int newZoneLabel, List<int[]> zones)
