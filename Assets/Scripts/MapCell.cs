@@ -22,7 +22,6 @@ public class MapCell {
 		isBorder = false;
 		zoneID = 0; // 0 = zona no asignada.
 		door = null;
-        isRock = false;
 	}
 
 }
