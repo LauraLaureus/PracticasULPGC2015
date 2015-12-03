@@ -27,7 +27,11 @@ public class GregarianNavigationSight : MonoBehaviour {
         }
 
 		if (mem.areEnemiesClose ()) {
-			destination = 2*this.transform.position - mem.getCloseEnemy().transform.position;
+			Debug.Log("Los enemigos están cerca");
+			NavMeshHit hit;
+			NavMesh.SamplePosition(2*this.transform.position - mem.getCloseEnemy().transform.position,out hit,12f,NavMesh.AllAreas);
+			destination = hit.position;
+			Debug.DrawRay(destination, Vector3.up,Color.green,1f);
 		}
         
         else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {

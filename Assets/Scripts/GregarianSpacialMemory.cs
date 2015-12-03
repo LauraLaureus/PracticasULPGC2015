@@ -80,7 +80,7 @@ public class GregarianSpacialMemory : MonoBehaviour {
 
 	private void deleteNonCloseEnemies(){
 		for (int i = closeEnemies.Count -1; i >=0; i--) {
-			if((closeEnemies[i].transform.position-gameObject.transform.position).sqrMagnitude > 2){
+			if((closeEnemies[i].transform.position-gameObject.transform.position).sqrMagnitude > 25f){
 				closeEnemies.RemoveAt(i);
 			}
 		}
