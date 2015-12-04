@@ -84,14 +84,14 @@ public class DungeonGeneratorMaze : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                if (map[i, j].door != null)
+                /*if (map[i, j].door != null)
                 {
                     if (map[i, j].cellKind == MapCell.CellKind.WALKABLE)
                         UpdateVisualMap(i, j, Color.red);
                     else
                         UpdateVisualMap(i, j, Color.yellow);
                 }
-                else if (map[i, j].isBorder)
+                else*/ if (map[i, j].isBorder)
                     UpdateVisualMap(i, j, Color.grey);
                 else if (map[i, j].cellKind == MapCell.CellKind.WALL)
                     UpdateVisualMap(i, j, Color.black);
@@ -409,6 +409,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
             int zoneID1 = door.zoneFrom;
             int zoneID2 = door.zoneTo;
             map[door.x, door.y].cellKind = MapCell.CellKind.WALKABLE;
+            map[door.x, door.y].isBorder = false;
             DeleteDoorsBetweenZones(i, zoneID1, zoneID2);
             UpdateMap();
             //yield return new WaitForSeconds(0.3f);
