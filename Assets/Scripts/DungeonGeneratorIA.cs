@@ -44,7 +44,7 @@ public class DungeonGeneratorIA : MonoBehaviour
 
         roomsCenters = new List<int[]>();
         miners = new List<MinerIA>();
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 4; i++)
         {            
             MinerIA miner = gameObject.AddComponent<MinerIA>();
             miner.Configure(width / 2, height / 2, map, this);

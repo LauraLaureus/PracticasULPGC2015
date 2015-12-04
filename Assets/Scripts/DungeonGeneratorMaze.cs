@@ -157,7 +157,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 attempt = 0;
                 rooms.Add(center);
                 UpdateMap();
-                yield return 0;
+                //yield return 0;
             }
 
         }
@@ -411,7 +411,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
             map[door.x, door.y].cellKind = MapCell.CellKind.WALKABLE;
             DeleteDoorsBetweenZones(i, zoneID1, zoneID2);
             UpdateMap();
-            yield return new WaitForSeconds(0.3f);
+            //yield return new WaitForSeconds(0.3f);
         }
         Debug.Log("Fin de union de habitaciones y pasillos");
         yield return 0;
@@ -480,9 +480,63 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
     IEnumerator FixTunels()
     {
+        /*
+        List<int[]> deadEnds = FindDeadEnds();
+        int[] deadEnd;
+        while (deadEnds.Count > 0)
+        {
+            deadEnd = deadEnds[0];
+            if (numberOfNeighbors(deadEnd) < 2)
+            {
+                map[deadEnd[0], deadEnd[1]].cellKind = MapCell.CellKind.WALL;
+                map[deadEnd[0], deadEnd[1]].isBorder = true;
+                map[deadEnd[0], deadEnd[1]].zoneID = 0;
+                if (map[deadEnd[0], deadEnd[1]].door != null)
+                {
+                    doors.Remove(map[deadEnd[0], deadEnd[1]].door);
+                    map[deadEnd[0], deadEnd[1]].door = null;
+                }
+            }
+            if (map[deadEnd[0] + 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] + 1, deadEnd[1] });
+            if (map[deadEnd[0] - 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] - 1, deadEnd[1] });
+            if (map[deadEnd[0], deadEnd[1] + 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] + 1 });
+            if (map[deadEnd[0], deadEnd[1] - 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] - 1 });
 
+            yield return 0;
+        }*/
+        Debug.Log("Fin de borrado de pasillos sin salida");
         yield return 0;
         //ToolChain();
+    }
+
+    int numberOfNeighbors(int[] deadEnd)
+    {
+        int numNeighbors = 0;
+
+        if (map[deadEnd[0] + 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
+
+        if (map[deadEnd[0], deadEnd[1] + 1].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
+        
+        if (map[deadEnd[0] - 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
+
+        if (map[deadEnd[0], deadEnd[1] - 1].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
+
+        return numNeighbors;
+    }
+
+    List<int[]> FindDeadEnds()
+    {
+        List<int[]> result = new List<int[]>();
+        for (int i = 1; i < width - 1; i++)
+        {
+            for (int j = 1; j < height - 1; j++)
+            {
+                if (map[i, j].cellKind == MapCell.CellKind.WALKABLE
+                    && numberOfNeighbors(new int[] { i, j }) < 2)
+                    result.Add(new int[] { i, j });
+            }
+        }
+        return result;
     }
 
     void Update()

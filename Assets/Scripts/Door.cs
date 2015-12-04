@@ -40,4 +40,10 @@ public class Door {
         if ((doorComp.x == x) && (doorComp.y == y)) return true;
         return false;
     }
+
+    public bool Equals(Door doorComp)
+    {
+        if ((doorComp.x == x) && (doorComp.y == y)) return true;
+        return false;
+    }
 }
