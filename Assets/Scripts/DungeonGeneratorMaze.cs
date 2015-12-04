@@ -9,7 +9,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
     public delegate void MapGenerated(MapCell[,] map, List<Door> doors);
     public static event MapGenerated OnMapCreated;
 
-    public delegate void MapGeneratedForIAs(List<Door> ds, int w, int h);
+    public delegate void MapGeneratedForIAs(List<int[]> ds);
     public static event MapGeneratedForIAs OnLiveNeeded;
 
     public int width = 64;
@@ -74,7 +74,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
     void ShowMap()
     {
         textureMap.Apply();
-        GetComponent<Renderer>().material.mainTexture = textureMap;
+        //GetComponent<Renderer>().material.mainTexture = textureMap;
 
     }
 
@@ -108,7 +108,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
         //Reciclar para spawners
         if (OnLiveNeeded != null)
-            OnLiveNeeded(doors, width, height);
+            OnLiveNeeded(rooms);
     }
 
     void UpdateMap()
@@ -506,7 +506,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
         }*/
         Debug.Log("Fin de borrado de pasillos sin salida");
         yield return 0;
-        //ToolChain();
+        ToolChain();
     }
 
     int numberOfNeighbors(int[] deadEnd)

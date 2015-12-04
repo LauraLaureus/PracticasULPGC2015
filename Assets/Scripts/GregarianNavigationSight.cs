@@ -27,20 +27,20 @@ public class GregarianNavigationSight : MonoBehaviour {
         }
 
 		if (mem.areEnemiesClose ()) {
-			Debug.Log("Los enemigos están cerca");
+			//Debug.Log("Los enemigos están cerca");
 			NavMeshHit hit;
 			NavMesh.SamplePosition(2*this.transform.position - mem.getCloseEnemy().transform.position,out hit,12f,NavMesh.AllAreas);
 			destination = hit.position;
-			Debug.DrawRay(destination, Vector3.up,Color.green,1f);
+			//Debug.DrawRay(destination, Vector3.up,Color.green,1f);
 		}
         
         else if (fsm.amIHungry () && mem.doIknowWhereFruitIs ()) {
 		
 			if ((agent.destination - mem.getFruit ()).sqrMagnitude < 0.01f) {
-                Debug.Log("Estoy cerca de la comida");
+                //Debug.Log("Estoy cerca de la comida");
 				return;
 			} else {
-                Debug.Log("Tengo hambre mamá");
+                //Debug.Log("Tengo hambre mamá");
 				destination = mem.getFruit ();
 			}
 		} else if (fsm.amIWandering()) { 
@@ -55,7 +55,7 @@ public class GregarianNavigationSight : MonoBehaviour {
 		mem.setNewPointInPath (destination);
 		agent.SetDestination (destination);
 
-		Debug.DrawRay(agent.destination,(Vector3.up*100),Color.white);
+		//Debug.DrawRay(agent.destination,(Vector3.up*100),Color.white);
 
 	}
 
@@ -71,18 +71,18 @@ public class GregarianNavigationSight : MonoBehaviour {
 
 		Physics.Raycast (whereIam, whereIamLooking, out hit);
 		forward = hit.point - whereIam;
-        Debug.DrawRay(whereIam, forward, Color.grey);
+        //Debug.DrawRay(whereIam, forward, Color.grey);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.right, out hit);
 		right = hit.point-whereIam;
-        Debug.DrawRay(whereIam, right, Color.grey);
+        //Debug.DrawRay(whereIam, right, Color.grey);
 
 		Physics.Raycast (whereIam, whereIamLooking+Vector3.left, out hit);
 		left = hit.point-whereIam;
-        Debug.DrawRay(whereIam, left, Color.grey);
+        //Debug.DrawRay(whereIam, left, Color.grey);
 		
         result = computateDestinationInSight (forward,right, left);
-        Debug.DrawRay(whereIam, forward, Color.white);
+        //Debug.DrawRay(whereIam, forward, Color.white);
 
 		foundEnemys ();
 		return result+whereIam;

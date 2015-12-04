@@ -11,7 +11,7 @@ public class TerrainPainterIA : MonoBehaviour
 
     protected void OnEnable()
     {
-        DungeonGeneratorIA.OnMapCreated += this.paintTerrain;
+        DungeonGeneratorMaze.OnMapCreated += this.paintTerrain;
     }
 
     protected void paintTerrain(MapCell[,] map, List<Door> doors)
@@ -66,7 +66,7 @@ public class TerrainPainterIA : MonoBehaviour
 
     protected void OnDisable()
     {
-        DungeonGeneratorIA.OnMapCreated -= this.paintTerrain;
+        DungeonGeneratorMaze.OnMapCreated -= this.paintTerrain;
     }
 
 }

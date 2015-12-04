@@ -8,13 +8,13 @@ public class HeightMapApplicatorIA : MonoBehaviour
 {
 
     private Terrain terrain;
-    public float factor;
+    public float factor = 8;
     public float wallheight;
 
 
     void OnEnable()
     {
-        DungeonGeneratorIA.OnMapCreated += apply;
+        DungeonGeneratorMaze.OnMapCreated += apply;
     }
 
     protected void apply(MapCell[,] map, List<Door> doors)
@@ -109,7 +109,7 @@ public class HeightMapApplicatorIA : MonoBehaviour
 
     void OnDisable()
     {
-        DungeonGeneratorIA.OnMapCreated -= apply;
+        DungeonGeneratorMaze.OnMapCreated -= apply;
 
     }
 

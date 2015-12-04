@@ -9,7 +9,7 @@ public class DungeonGeneratorIA : MonoBehaviour
     public delegate void MapGenerated(MapCell[,] map, List<Door> doors);
     public static event MapGenerated OnMapCreated;
 
-    public delegate void MapGeneratedForIAs(List<Door> ds, int w, int h);
+    public delegate void MapGeneratedForIAs(List<int[]> ds);
     public static event MapGeneratedForIAs OnLiveNeeded;
 
     public int width;
@@ -397,7 +397,7 @@ public class DungeonGeneratorIA : MonoBehaviour
 
         //Reciclar para spawners
         if (OnLiveNeeded != null)
-            OnLiveNeeded(doors, width, height);
+            OnLiveNeeded(rooms);
     }
 
     void traslateDoors()
