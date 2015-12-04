@@ -23,14 +23,15 @@ public class SpawnPointIA : MonoBehaviour {
         int[] chosenCenter = roomCenters[index];
         //float factor = gameObject.GetComponent<HeightMapApplicatorIA>().factor;
         gameObject.GetComponent<HeightMapApplicatorIA>();
-
-        /*for (int i = 0; i < chosenCenter.Length; i++) {
+        float factor = 8;
+        
+        for (int i = 0; i < chosenCenter.Length; i++) {
             chosenCenter[i] *= (int)factor;
         }
 
         for (int i = 0; i < numIAs; i++) {
-            Instantiate(prefab, new Vector3(chosenCenter[0], 1f, chosenCenter[1]), Quaternion.identity);
-        }*/
+            Instantiate(prefab, new Vector3(chosenCenter[1], 1f, chosenCenter[0]), Quaternion.identity);
+        }
     }
 
 

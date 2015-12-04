@@ -19,6 +19,11 @@ public class TerrainPainterIA : MonoBehaviour
         terrain = this.gameObject.GetComponent<Terrain>();
         float[,,] splatmapData = new float[terrain.terrainData.alphamapWidth, terrain.terrainData.alphamapHeight, terrain.terrainData.alphamapLayers];
 
+        if (terrain.terrainData.alphamapLayers <= 0) {
+            Debug.Log("alphamapLayers es menor o igual que 0");
+            return;
+        }
+
         float[] splatWallWeights = new float[terrain.terrainData.alphamapLayers];
         splatWallWeights[0] = 0f;
         splatWallWeights[1] = 1f;
