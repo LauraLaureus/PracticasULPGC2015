@@ -100,8 +100,6 @@ public class DungeonGeneratorIA : MonoBehaviour
                     UpdateVisualMap(i, j, Color.gray);
                 else
                     UpdateVisualMap(i, j, Color.white);
-                if (map[i, j].isRock)
-                    UpdateVisualMap(i, j, Color.green);
             }
         }
     }

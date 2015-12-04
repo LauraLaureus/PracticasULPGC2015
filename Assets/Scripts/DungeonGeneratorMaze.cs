@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+using System;
 
 public class DungeonGeneratorMaze : MonoBehaviour
 {
@@ -15,19 +15,19 @@ public class DungeonGeneratorMaze : MonoBehaviour
     public int width = 64;
     public int height = 64;
 
-    //variables para las habitaciones
+    //variables para las habitaciones y tuneles
     public int numberOfRooms = 10;
     int roomsCreated;
     int maxRoomRadius;
     List<int[]> rooms;
-
-    //variabes para los tuneles
     Stack<int[]> posibleCells;
+    int zoneIDseed = 0;
+    int zoneIDmark;
+    List<Door> doors;
 
     Texture2D textureMap;
 
     public static MapCell[,] map;
-    List<Door> doors;
 
     void Start()
     {
@@ -49,8 +49,10 @@ public class DungeonGeneratorMaze : MonoBehaviour
                             || j == 0
                             || j == height - 1
                             )
+                {
                     map[i, j].isBorder = true; //caso de bordes
-                map[i, j].cellKind = MapCell.CellKind.WALL;
+                    map[i, j].zoneID = 0;
+                }
                 UpdateVisualMap(i, j, Color.gray);
             }
         }
@@ -59,6 +61,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
         maxRoomRadius = (int) (width * height / 800);
         roomsCreated = 0;
         rooms = new List<int[]>();
+        doors = new List<Door>();
         StartCoroutine(CreateRooms());
 
     }
@@ -81,10 +84,17 @@ public class DungeonGeneratorMaze : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                if (map[i, j].isBorder)
-                    UpdateVisualMap(i, j, Color.black);
-                else if (map[i, j].cellKind == MapCell.CellKind.WALL)
+                if (map[i, j].door != null)
+                {
+                    if (map[i, j].cellKind == MapCell.CellKind.WALKABLE)
+                        UpdateVisualMap(i, j, Color.red);
+                    else
+                        UpdateVisualMap(i, j, Color.yellow);
+                }
+                else if (map[i, j].isBorder)
                     UpdateVisualMap(i, j, Color.grey);
+                else if (map[i, j].cellKind == MapCell.CellKind.WALL)
+                    UpdateVisualMap(i, j, Color.black);
                 else
                     UpdateVisualMap(i, j, Color.white);
             }
@@ -93,22 +103,12 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
     void ToolChain()
     {
-        traslateDoors();
-
         if (OnMapCreated != null)
             OnMapCreated(map, doors);
 
         //Reciclar para spawners
         if (OnLiveNeeded != null)
             OnLiveNeeded(doors, width, height);
-    }
-
-    void traslateDoors()
-    {
-        for (int i = 0; i < doors.Count; i++)
-        {
-            doors[i].translateInto(width, height);
-        }
     }
 
     void UpdateMap()
@@ -131,6 +131,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
             {
 
                 //construir
+                zoneIDseed++;
                 for (int i = center[0] - radius[0] - 1; i <= center[0] + radius[0] + 1; i++)
                 {
                     for (int j = center[1] - radius[1] - 1; j<= center[1] + radius[1] + 1; j++)
@@ -140,9 +141,17 @@ public class DungeonGeneratorMaze : MonoBehaviour
                             || j == center[1] - radius[1] - 1
                             || j == center[1] + radius[1] + 1
                             )
+                        {
                             map[i, j].isBorder = true; //caso de bordes
+                            map[i, j].cellKind = MapCell.CellKind.WALL;
+                            map[i, j].zoneID = 0;
+                        }
+
                         else
+                        {
+                            map[i, j].zoneID = zoneIDseed;
                             map[i, j].cellKind = MapCell.CellKind.WALKABLE;
+                        }
                     }
                 }
                 attempt = 0;
@@ -152,15 +161,18 @@ public class DungeonGeneratorMaze : MonoBehaviour
             }
 
         }
+        zoneIDseed++;
+        zoneIDmark = zoneIDseed;
         Debug.Log("Fin de creacion de habitaciones");
+        yield return 0;
         StartCoroutine(CreateTunels());
     }
 
     int[] GenerateRandomValues(int startVal1, int EndVal1, int startVal2, int EndVal2)
     {
         int[] result = new int[2];
-        result[0] = Random.Range(startVal1, EndVal1);
-        result[1] = Random.Range(startVal2, EndVal2);
+        result[0] = UnityEngine.Random.Range(startVal1, EndVal1);
+        result[1] = UnityEngine.Random.Range(startVal2, EndVal2);
         return result;
     }
 
@@ -205,10 +217,11 @@ public class DungeonGeneratorMaze : MonoBehaviour
     IEnumerator CreateTunels()
     {
         posibleCells = new Stack<int[]>();
+        int[] cellPos;
         ScanForFreeZones();
         while (posibleCells.Count > 0)
         {
-            int[] cellPos = posibleCells.Pop();
+            cellPos = posibleCells.Pop();
 
             //Analizar si la celda es minable
             if (map[cellPos[0], cellPos[1]].isBorder
@@ -226,6 +239,8 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 )
             {
                 map[cellPos[0], cellPos[1]].isBorder = true;
+                map[cellPos[0], cellPos[1]].cellKind = MapCell.CellKind.WALL;
+                map[cellPos[0], cellPos[1]].zoneID = 0;
                 if (posibleCells.Count <= 0) ScanForFreeZones();
                 continue;
             }
@@ -235,6 +250,8 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 )
             {
                 map[cellPos[0], cellPos[1]].isBorder = true;
+                map[cellPos[0], cellPos[1]].cellKind = MapCell.CellKind.WALL;
+                map[cellPos[0], cellPos[1]].zoneID = 0;
                 if (posibleCells.Count <= 0) ScanForFreeZones();
                 continue;
             }
@@ -244,6 +261,8 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 )
             {
                 map[cellPos[0], cellPos[1]].isBorder = true;
+                map[cellPos[0], cellPos[1]].cellKind = MapCell.CellKind.WALL;
+                map[cellPos[0], cellPos[1]].zoneID = 0;
                 if (posibleCells.Count <= 0) ScanForFreeZones();
                 continue;
             }
@@ -253,46 +272,74 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 )
             {
                 map[cellPos[0], cellPos[1]].isBorder = true;
+                map[cellPos[0], cellPos[1]].cellKind = MapCell.CellKind.WALL;
+                map[cellPos[0], cellPos[1]].zoneID = 0;
                 if (posibleCells.Count <= 0) ScanForFreeZones();
                 continue;
             }
 
             //Si tiene mas de un vecino walkable en las posiciones cardinales, pasar al siguiente (para no unir pasillos/habitaciones)
             int numNeighbors = 0;
-            if (map[cellPos[0] + 1, cellPos[1]].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
-            if (map[cellPos[0], cellPos[1] + 1].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
-            if (map[cellPos[0] - 1, cellPos[1]].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
-            if (map[cellPos[0], cellPos[1] - 1].cellKind == MapCell.CellKind.WALKABLE) numNeighbors++;
+            int[] posOrigin = null;
+            if (map[cellPos[0] + 1, cellPos[1]].cellKind == MapCell.CellKind.WALKABLE)
+            {
+                numNeighbors++;
+                posOrigin = new int[2] { cellPos[0] + 1, cellPos[1] };
+            }
+                
+            if (map[cellPos[0], cellPos[1] + 1].cellKind == MapCell.CellKind.WALKABLE)
+            {
+                numNeighbors++;
+                posOrigin = new int[2] { cellPos[0], cellPos[1] + 1 };
+            }
+            if (map[cellPos[0] - 1, cellPos[1]].cellKind == MapCell.CellKind.WALKABLE)
+            {
+                numNeighbors++;
+                posOrigin = new int[2] { cellPos[0] - 1, cellPos[1] };
+            }
+            if (map[cellPos[0], cellPos[1] - 1].cellKind == MapCell.CellKind.WALKABLE)
+            {
+                numNeighbors++;
+                posOrigin = new int[2] { cellPos[0], cellPos[1] - 1 };
+            }
             if (numNeighbors > 1)
             {
                 map[cellPos[0], cellPos[1]].isBorder = true;
+                map[cellPos[0], cellPos[1]].zoneID = 0;
                 if (posibleCells.Count <= 0) ScanForFreeZones();
                 continue;
             }
 
             //Tratar la celda
             map[cellPos[0], cellPos[1]].cellKind = MapCell.CellKind.WALKABLE;
+            if (posOrigin != null)
+                map[cellPos[0], cellPos[1]].zoneID = map[posOrigin[0], posOrigin[1]].zoneID;
+            else
+            {
+                zoneIDseed++;
+                map[cellPos[0], cellPos[1]].zoneID = zoneIDseed;
+
+            }
 
             // añadir nodos nuevos a 4 posiciones de manera aleatoria
             AddNeighbors(cellPos);
 
             UpdateMap();
-            yield return 0;
+            //yield return 0;
         }
         Debug.Log("Fin de creacion de pasillos");
-        StartCoroutine(CreateDoors());
+        yield return 0;
+        StartCoroutine(MergeZones());
     }
 
     void ScanForFreeZones()
     {
-        Debug.Log("Escaneando zonas para pasillos...");
         for (int i = 1; i < width - 1; i++)
         {
             for (int j = 1; j < height - 1; j++)
             {
                 if (map[i, j].cellKind == MapCell.CellKind.WALL && !map[i, j].isBorder)
                 {
-                    Debug.Log("Celda añadida --> " + i + ", " + j);
                     posibleCells.Push(new int[] { i, j });
                     return;
                 }
@@ -302,9 +349,9 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
     void AddNeighbors(int[] cellPos)
     {
-        if (Random.value < 0.5f)
+        if (UnityEngine.Random.value < 0.5f)
         {//horizontal first
-            if (Random.value < 0.5f)
+            if (UnityEngine.Random.value < 0.5f)
             {//left first
                 posibleCells.Push(new int[] { cellPos[0] + 1, cellPos[1] });
                 posibleCells.Push(new int[] { cellPos[0] - 1, cellPos[1] });
@@ -314,7 +361,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 posibleCells.Push(new int[] { cellPos[0] - 1, cellPos[1] });
                 posibleCells.Push(new int[] { cellPos[0] + 1, cellPos[1] });
             }
-            if (Random.value < 0.5f)
+            if (UnityEngine.Random.value < 0.5f)
             { //top first
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] + 1 });
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] - 1 });
@@ -327,7 +374,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
         }
         else
         {//vertical first
-            if (Random.value < 0.5f)
+            if (UnityEngine.Random.value < 0.5f)
             {//top first
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] + 1 });
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] - 1 });
@@ -337,7 +384,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] - 1 });
                 posibleCells.Push(new int[] { cellPos[0], cellPos[1] + 1 });
             }
-            if (Random.value < 0.5f)
+            if (UnityEngine.Random.value < 0.5f)
             {//left first
                 posibleCells.Push(new int[] { cellPos[0] + 1, cellPos[1] });
                 posibleCells.Push(new int[] { cellPos[0] - 1, cellPos[1] });
@@ -351,11 +398,84 @@ public class DungeonGeneratorMaze : MonoBehaviour
         }
     }
 
-    IEnumerator CreateDoors()
+    IEnumerator MergeZones()
     {
+        ScanForDoors();
 
+        Door door;
+        for (int i = 0; i< doors.Count; i++)
+        {
+            door = doors[i];
+            int zoneID1 = door.zoneFrom;
+            int zoneID2 = door.zoneTo;
+            map[door.x, door.y].cellKind = MapCell.CellKind.WALKABLE;
+            DeleteDoorsBetweenZones(i, zoneID1, zoneID2);
+            UpdateMap();
+            yield return new WaitForSeconds(0.3f);
+        }
+        Debug.Log("Fin de union de habitaciones y pasillos");
         yield return 0;
         StartCoroutine(FixTunels());
+    }
+
+    void ScanForDoors()
+    {
+        for(int i = 1; i < width - 1; i++)
+        {
+            for(int j = 1; j <height - 1; j++)
+            {
+                if (map[i, j].isBorder)
+                {
+                    if (map[i + 1, j].zoneID < zoneIDmark 
+                        && map[i + 1, j].zoneID != 0
+                        && map[i - 1, j].zoneID > zoneIDmark)
+                    {
+                        CreateDoor(i, j, i + 1, j);
+                    }
+                    if (map[i - 1, j].zoneID < zoneIDmark 
+                        && map[i - 1, j].zoneID != 0
+                        && map[i + 1, j].zoneID > zoneIDmark)
+                    {
+                        CreateDoor(i, j, i - 1, j);
+                    }
+                    if (map[i, j + 1].zoneID < zoneIDmark 
+                        && map[i, j + 1].zoneID != 0
+                        && map[i, j - 1].zoneID > zoneIDmark)
+                    {
+                        CreateDoor(i, j, i, j + 1);
+                    }
+                    if (map[i, j - 1].zoneID < zoneIDmark
+                        && map[i, j - 1].zoneID != 0
+                        && map[i, j + 1].zoneID > zoneIDmark)
+                    {
+                        CreateDoor(i, j, i, j - 1);
+                    }
+                }
+            }
+            UpdateMap();
+        }
+    }
+
+    void CreateDoor(int i, int j, int fromX, int fromY)
+    {
+        Door door = new Door(i, j, map[fromX, fromY].zoneID, map);
+        door.updateDoorDirection();
+        door.updateDoorZones();
+        map[i, j].door = door;
+        doors.Add(door);
+    }
+
+    void DeleteDoorsBetweenZones(int start, int zoneID1, int zoneID2)
+    {
+        for (int i = start + 1; i < doors.Count; i++)
+        {
+            if (doors[i].zoneFrom == zoneID1 && doors[i].zoneTo == zoneID2)
+            {
+                map[doors[i].x, doors[i].y].door = null;
+                doors.RemoveAt(i);
+                i--;
+            }
+        }
     }
 
     IEnumerator FixTunels()
@@ -363,82 +483,6 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
         yield return 0;
         //ToolChain();
-    }
-
-    void MergeZone(int oldZoneLabel, int newZoneLabel, List<int[]> zones)
-    {
-        int[] oldZone = zones.Find(z => z[0] == oldZoneLabel);
-        int[] newZone = zones.Find(z => z[0] == newZoneLabel);
-        newZone[1] = newZone[1] + oldZone[1];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                if (map[i, j].zoneID == oldZoneLabel)
-                    map[i, j].zoneID = newZoneLabel;
-            }
-        }
-    }
-
-    void CheckVicinity(List<int[]> checkList, MapCell.CellKind matchKind)
-    {
-        int[] position = checkList[0];
-        List<int[]> tmpList = new List<int[]>();
-        if (position[0] > 0)
-            if (map[position[0] - 1, position[1]].cellKind == matchKind && map[position[0], position[1]].zoneID == 0)
-                tmpList.Add(new int[] { position[0] - 1, position[1] });
-        if (position[0] < width - 1)
-            if (map[position[0] + 1, position[1]].cellKind == matchKind && map[position[0], position[1]].zoneID == 0)
-                tmpList.Add(new int[] { position[0] + 1, position[1] });
-        if (position[1] > 0)
-            if (map[position[0], position[1] - 1].cellKind == matchKind && map[position[0], position[1]].zoneID == 0)
-                tmpList.Add(new int[] { position[0], position[1] - 1 });
-        if (position[1] < height - 1)
-            if (map[position[0], position[1] + 1].cellKind == matchKind && map[position[0], position[1]].zoneID == 0)
-                tmpList.Add(new int[] { position[0], position[1] + 1 });
-
-        for (int i = 0; i < tmpList.Count; i++)
-            if (!checkList.Contains(tmpList[i]))
-                checkList.Add(tmpList[i]);
-    }
-
-    bool CheckIsDoor(int x, int y)
-    {
-        if (x > 0 && x < width - 1 && y > 0 && y < height - 1)
-            if (((
-                map[x - 1, y].cellKind == MapCell.CellKind.WALL &&
-                map[x + 1, y].cellKind == MapCell.CellKind.WALL &&
-                map[x, y - 1].cellKind == MapCell.CellKind.WALKABLE &&
-                map[x, y + 1].cellKind == MapCell.CellKind.WALKABLE) ||
-                 (
-                map[x - 1, y].cellKind == MapCell.CellKind.WALKABLE &&
-                map[x + 1, y].cellKind == MapCell.CellKind.WALKABLE &&
-                map[x, y - 1].cellKind == MapCell.CellKind.WALL &&
-                map[x, y + 1].cellKind == MapCell.CellKind.WALL)) &&
-                (
-                map[x, y - 1].door == null &&
-                map[x, y + 1].door == null &&
-                map[x - 1, y].door == null &&
-                map[x + 1, y].door == null))
-                return true;
-        return false;
-    }
-
-    public int[] getCenterOfGravity() //para habitaciones?
-    {
-        
-        int[] gravityCenter = new int[2] { 0, 0 };
-        /*
-        for (int i = 0; i < miners.Count; i++)
-        {
-            int[] posMiner = miners[i].GetPos();
-            gravityCenter[0] += posMiner[0];
-            gravityCenter[1] += posMiner[1];
-        }
-        gravityCenter[0] = gravityCenter[0] / miners.Count;
-        gravityCenter[1] = gravityCenter[1] / miners.Count;
-        */
-        return gravityCenter;
     }
 
     void Update()

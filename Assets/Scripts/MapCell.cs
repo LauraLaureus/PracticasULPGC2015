@@ -15,7 +15,6 @@ public class MapCell {
 	public bool isBorder;
 	public Door door;
 	public int zoneID;
-    public bool isRock;
 	
 	public MapCell () {
 		cellKind = CellKind.UNUSED;
