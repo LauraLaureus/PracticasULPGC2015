@@ -84,14 +84,14 @@ public class DungeonGeneratorMaze : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                /*if (map[i, j].door != null)
+                if (map[i, j].door != null)
                 {
                     if (map[i, j].cellKind == MapCell.CellKind.WALKABLE)
                         UpdateVisualMap(i, j, Color.red);
                     else
                         UpdateVisualMap(i, j, Color.yellow);
                 }
-                else*/ if (map[i, j].isBorder)
+                else if (map[i, j].isBorder)
                     UpdateVisualMap(i, j, Color.grey);
                 else if (map[i, j].cellKind == MapCell.CellKind.WALL)
                     UpdateVisualMap(i, j, Color.black);
@@ -481,14 +481,16 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
     IEnumerator FixTunels()
     {
-        /*
         List<int[]> deadEnds = FindDeadEnds();
         int[] deadEnd;
         while (deadEnds.Count > 0)
         {
             deadEnd = deadEnds[0];
+
+            //si tiene solo un vecino o menos...
             if (numberOfNeighbors(deadEnd) < 2)
             {
+                //tratar celda
                 map[deadEnd[0], deadEnd[1]].cellKind = MapCell.CellKind.WALL;
                 map[deadEnd[0], deadEnd[1]].isBorder = true;
                 map[deadEnd[0], deadEnd[1]].zoneID = 0;
@@ -497,14 +499,18 @@ public class DungeonGeneratorMaze : MonoBehaviour
                     doors.Remove(map[deadEnd[0], deadEnd[1]].door);
                     map[deadEnd[0], deadEnd[1]].door = null;
                 }
-            }
-            if (map[deadEnd[0] + 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] + 1, deadEnd[1] });
-            if (map[deadEnd[0] - 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] - 1, deadEnd[1] });
-            if (map[deadEnd[0], deadEnd[1] + 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] + 1 });
-            if (map[deadEnd[0], deadEnd[1] - 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] - 1 });
 
-            yield return 0;
-        }*/
+                //Añadir vecinos walkables
+                if (map[deadEnd[0] + 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] + 1, deadEnd[1] });
+                if (map[deadEnd[0] - 1, deadEnd[1]].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0] - 1, deadEnd[1] });
+                if (map[deadEnd[0], deadEnd[1] + 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] + 1 });
+                if (map[deadEnd[0], deadEnd[1] - 1].cellKind == MapCell.CellKind.WALKABLE) deadEnds.Add(new int[] { deadEnd[0], deadEnd[1] - 1 });
+            }
+            
+            deadEnds.RemoveAt(0);
+            UpdateMap();
+            //yield return 0;
+        }
         Debug.Log("Fin de borrado de pasillos sin salida");
         yield return 0;
         ToolChain();
@@ -539,13 +545,5 @@ public class DungeonGeneratorMaze : MonoBehaviour
         }
         return result;
     }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-            Application.LoadLevel("DungeonTest");
-
-    }
-
 
 }
