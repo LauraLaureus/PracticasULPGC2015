@@ -465,6 +465,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
         Door door = new Door(i, j, map[fromX, fromY].zoneID, map);
         door.updateDoorDirection();
         door.updateDoorZones();
+        door.translateInto(width, height);
         map[i, j].door = door;
         doors.Add(door);
     }

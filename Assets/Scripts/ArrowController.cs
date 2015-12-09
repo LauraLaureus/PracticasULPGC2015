@@ -32,6 +32,7 @@ public class ArrowController : MonoBehaviour {
         if ( (healthscript = go.GetComponent<Health>()) != null)
         {
             healthscript.TakeDamage(damage);
+            Destroy(this.gameObject);
         }
 
     }

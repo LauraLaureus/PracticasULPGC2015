@@ -9,7 +9,7 @@ public class DoorCreator : MonoBehaviour {
 
     void OnEnable()
     {
-        DungeonGeneratorIA.OnMapCreated += createDoors;
+        DungeonGeneratorMaze.OnMapCreated += createDoors;
     }
 
     void createDoors (MapCell[,] map, List<Door> doors) {
@@ -32,6 +32,6 @@ public class DoorCreator : MonoBehaviour {
 
     void OnDisable()
     {
-        DungeonGeneratorIA.OnMapCreated -= createDoors;
+        DungeonGeneratorMaze.OnMapCreated -= createDoors;
     }
 }

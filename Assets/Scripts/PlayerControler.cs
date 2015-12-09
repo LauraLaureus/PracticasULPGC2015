@@ -8,6 +8,8 @@ public class PlayerControler : MonoBehaviour {
     private Quaternion targetRotation;
     private float forwardInput, leftRightInput, turnAroundInput;
 
+    private bool haveKey = true;
+
     public float maxLoad = 10.0f;
     public float growFactor = 2;
 
@@ -34,6 +36,20 @@ public class PlayerControler : MonoBehaviour {
     public Quaternion GetRotation()
     {
         return targetRotation;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Key"))
+        {
+            Destroy(other.gameObject);
+            haveKey = true;
+        }
+        else if (other.gameObject.CompareTag("Door") && haveKey)
+        {
+            Destroy(other.gameObject);
+            haveKey = false;
+        }
     }
 
 }
