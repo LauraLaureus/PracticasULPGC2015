@@ -18,7 +18,6 @@ public class DoorCreator : MonoBehaviour {
         {
             doors[i].x_t *= terrain.terrainData.heightmapWidth;
             doors[i].y_t *= terrain.terrainData.heightmapHeight;
-            Debug.Log("Puerta " + i + " creada en " + doors[i].x_t + ", " + doors[i].y_t);
 
             if (doors[i].doorDirection == 1)
                 GameObject.Instantiate(doorPrefab, new Vector3(doors[i].y_t, 5f, doors[i].x_t),

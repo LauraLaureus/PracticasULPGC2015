@@ -24,15 +24,18 @@ public class ArrowController : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        GetComponent<Collider>().enabled = false;
-        Destroy(rb);
-
-        Health healthscript;
-        GameObject go = other.gameObject;
-        if ( (healthscript = go.GetComponent<Health>()) != null)
+        if (!other.CompareTag("Player"))
         {
-            healthscript.TakeDamage(damage);
-            Destroy(this.gameObject);
+            GetComponent<Collider>().enabled = false;
+            Destroy(rb);
+
+            Health healthscript;
+            GameObject go = other.gameObject;
+            if ((healthscript = go.GetComponent<Health>()) != null)
+            {
+                healthscript.TakeDamage(damage);
+                Destroy(this.gameObject);
+            }
         }
 
     }

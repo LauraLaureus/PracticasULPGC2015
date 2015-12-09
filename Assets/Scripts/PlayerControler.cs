@@ -48,7 +48,7 @@ public class PlayerControler : MonoBehaviour {
         else if (other.gameObject.CompareTag("Door") && haveKey)
         {
             Destroy(other.gameObject);
-            haveKey = false;
+            //haveKey = false;
         }
     }
 
