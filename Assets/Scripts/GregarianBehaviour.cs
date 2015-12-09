@@ -55,7 +55,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		);
 		rb.velocity = transform.forward * navMeshAgent.speed;
 
-		//Debug.DrawLine (this.transform.position, this.transform.position + steeringForce,Color.red);
+		Debug.DrawLine (this.transform.position, this.transform.position + steeringForce,Color.red);
 
 	}
 

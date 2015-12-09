@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEditor;
 
 public class DungeonGeneratorMaze : MonoBehaviour
 {
@@ -103,9 +104,11 @@ public class DungeonGeneratorMaze : MonoBehaviour
 
     void ToolChain()
     {
+
         if (OnMapCreated != null)
             OnMapCreated(map, doors);
 
+		NavMeshBuilder.BuildNavMesh();
         //Reciclar para spawners
         if (OnLiveNeeded != null)
             OnLiveNeeded(rooms);
