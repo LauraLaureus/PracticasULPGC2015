@@ -15,9 +15,9 @@ public class SpawnPlayer : MonoBehaviour {
 	}
 	
 	public void CreatePlayer(List<int[]> roomCenters){
-		int[] roomCenter = roomCenters [roomCenters.Count - 1];
+		int[] roomCenter = roomCenters [roomCenters.Count/2];
 
-		Instantiate(playerPrefab, new Vector3(roomCenter[0], 1f, roomCenter[1]), Quaternion.identity);
+		Instantiate(playerPrefab, new Vector3(roomCenter[1], 2f, roomCenter[0]), Quaternion.identity);
 		
 	}
 	
