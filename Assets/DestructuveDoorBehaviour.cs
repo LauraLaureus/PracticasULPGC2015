@@ -22,23 +22,26 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 
 
 	void FixedUpdate(){
-		Debug.Log("flag");
+		//Debug.Log("flag");
 		StartCoroutine (state.ToString ());
+
 	}
 
 	IEnumerator Lift(){
-		while(gameObject.transform.position.y < maxHeight){
-			gameObject.transform.Translate(new Vector3(0,(float)0.1*Time.fixedDeltaTime,0));
+        gameObject.transform.Translate(new Vector3(0, (float)0.1 * Time.fixedDeltaTime, 0));
+		if(gameObject.transform.position.y > maxHeight){
+            state = DoorStatus.Drop;
+            Debug.Log("Vamos para abajo");
 		}
-		state = DoorStatus.Drop;
-		yield return new WaitForSeconds(secondsToChangeState);
+		yield return null;
 	}
 
 	IEnumerator Drop(){
-		while(gameObject.transform.position.y > 0){
-			gameObject.transform.Translate(new Vector3(0,(float)-0.1*Time.fixedDeltaTime,0));
+        gameObject.transform.Translate(new Vector3(0, (float)-0.1 * Time.fixedDeltaTime, 0));
+		if(gameObject.transform.position.y <= 0){
+            state = DoorStatus.Lift;
+            Debug.Log("Vamos para arriba");
 		}
-		state = DoorStatus.Lift;
-		yield return new WaitForSeconds(secondsToChangeState);
+		yield return null;
 	}
 }
