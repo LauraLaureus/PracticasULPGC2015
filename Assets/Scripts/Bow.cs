@@ -25,12 +25,14 @@ public class Bow : MonoBehaviour {
     private void checkForClicks()
     {
 
-        if (Input.GetMouseButton(0) && loadBow <= maxLoad)
+
+
+        if ( Input.GetMouseButton(0) && loadBow <= maxLoad)
         {
             loadBow += maxLoad /growFactor;
         }
 
-        else if (!Input.GetMouseButton(0) && loadBow > 0.0f)
+		else if (!Input.GetMouseButton(0) && loadBow > 0.0f)
         {
             shotArrow();
             loadBow = 0.0f;

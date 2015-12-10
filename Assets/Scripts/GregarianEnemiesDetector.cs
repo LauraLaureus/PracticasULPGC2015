@@ -13,7 +13,7 @@ public class GregarianEnemiesDetector : MonoBehaviour {
 	void FixedUpdate () {
 		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 15f, Vector3.forward);
 		foreach (RaycastHit hit in hits) {
-			if(hit.collider.gameObject.tag =="Bunny"){
+			if(hit.collider.gameObject.tag =="Bunny" ||hit.collider.gameObject.tag =="Player" ){
 				mem.setCloseEnemy(hit.collider.gameObject);
 			}
 		}

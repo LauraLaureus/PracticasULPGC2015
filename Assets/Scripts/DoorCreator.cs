@@ -13,7 +13,7 @@ public class DoorCreator : MonoBehaviour {
     }
 
     void createDoors (MapCell[,] map, List<Door> doors) {
-        terrain = this.gameObject.GetComponent<Terrain>();
+		terrain = GameObject.FindObjectOfType<Terrain> ();
         for (int i = 0; i<doors.Count; i++)
         {
             doors[i].x_t *= terrain.terrainData.heightmapWidth;
