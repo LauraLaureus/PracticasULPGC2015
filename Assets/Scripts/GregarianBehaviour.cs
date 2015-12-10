@@ -8,7 +8,6 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Rigidbody rb;
 	private NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
-	//private GregarianSpacialMemory mem;
 
 
 
@@ -17,7 +16,6 @@ public class GregarianBehaviour : MonoBehaviour {
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
 		StartCoroutine(this.gameObject.GetComponent<GregarianFSM> ().StartFSM ());
-		//mem = gameObject.GetComponent<GregarianSpacialMemory> ();
 	}
 
 	void OnTriggerEnter(Collider other){
