@@ -5,9 +5,6 @@ using System.Collections.Generic;
 public class SpawnPlayer : MonoBehaviour {
 
 	public GameObject playerPrefab;
-	/*
-	public delegate void PlayerCreated(GameObject player); 
-	public static event PlayerCreated OnPlayerCreated;*/
 
 	void OnEnable (){
 		DungeonGeneratorMaze.OnLiveNeeded += CreatePlayer;
@@ -16,9 +13,8 @@ public class SpawnPlayer : MonoBehaviour {
 	
 	public void CreatePlayer(List<int[]> roomCenters){
 		int[] roomCenter = roomCenters [roomCenters.Count/2];
-
-		Instantiate(playerPrefab, new Vector3(roomCenter[1], 2f, roomCenter[0]), Quaternion.identity);
-		
+		GameObject player =(GameObject) Instantiate(playerPrefab, new Vector3(roomCenter[1]*8, 2f, roomCenter[0]*8), Quaternion.identity);
+		player.GetComponent<Rigidbody> ().MovePosition (new Vector3(roomCenter [1]*8, 2f, roomCenter [0]*8));
 	}
 	
 	void OnDisable(){
