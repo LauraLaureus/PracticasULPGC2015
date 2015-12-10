@@ -19,7 +19,7 @@ public class Bow : MonoBehaviour {
     void FixedUpdate()
     {
         checkForClicks();
-        updateHealthBar();
+        updateLoadBar();
     }
 
     private void checkForClicks()
@@ -38,7 +38,7 @@ public class Bow : MonoBehaviour {
 
     }
 
-    private void updateHealthBar()
+    private void updateLoadBar()
     {
         if (bowBar != null)
         {

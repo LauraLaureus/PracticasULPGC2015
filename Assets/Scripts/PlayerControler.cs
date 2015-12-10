@@ -9,6 +9,7 @@ public class PlayerControler : MonoBehaviour {
     private float forwardInput, leftRightInput, turnAroundInput;
 
     private bool haveKey = true;
+    public KeyBar keyBar;
 
     public float maxLoad = 10.0f;
     public float growFactor = 2;
@@ -18,9 +19,9 @@ public class PlayerControler : MonoBehaviour {
 		rb = GetComponent<Rigidbody> ();
         targetRotation = transform.rotation;
         forwardInput = leftRightInput = turnAroundInput = 0;
+        keyBar.UpdateKeyBar(haveKey);
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
 
         forwardInput = Input.GetAxis("Vertical");
@@ -44,11 +45,13 @@ public class PlayerControler : MonoBehaviour {
         {
             Destroy(other.gameObject);
             haveKey = true;
+            keyBar.UpdateKeyBar(haveKey);
         }
         else if (other.gameObject.CompareTag("Door") && haveKey)
         {
             Destroy(other.gameObject);
-            //haveKey = false;
+            haveKey = false;
+            keyBar.UpdateKeyBar(haveKey);
         }
     }
 

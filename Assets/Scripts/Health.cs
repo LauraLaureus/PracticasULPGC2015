@@ -26,6 +26,14 @@ public class Health : MonoBehaviour {
             {
                 health = 0;
                 alive = false;
+                if (this.gameObject.CompareTag("Player"))
+                {
+                    Application.LoadLevel(0);
+                }
+                else
+                {
+                    Destroy(this.gameObject);
+                }
             }
         }
         
@@ -38,4 +46,5 @@ public class Health : MonoBehaviour {
             healthBar.UpdateHealthBar(health);
         }
     }
+
 }
