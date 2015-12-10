@@ -11,6 +11,8 @@ public class PlayerControler : MonoBehaviour {
     private bool haveKey = true;
     public KeyBar keyBar;
 
+    public Health health;
+
     public float maxLoad = 10.0f;
     public float growFactor = 2;
 
@@ -52,6 +54,11 @@ public class PlayerControler : MonoBehaviour {
             Destroy(other.gameObject);
             haveKey = false;
             keyBar.UpdateKeyBar(haveKey);
+        }
+        else if (other.gameObject.CompareTag("Fruit"))
+        {
+            health.AddHealth(20);
+            other.GetComponent<FruitBehaviour>().eaten();
         }
     }
 

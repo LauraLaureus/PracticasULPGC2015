@@ -7,6 +7,7 @@ public class Health : MonoBehaviour {
     private float health;
     public HealthBar healthBar;
     private bool alive = true;
+    public GameObject keyPrefab;
 
     void Start () {
         health = 100.0f;
@@ -32,11 +33,25 @@ public class Health : MonoBehaviour {
                 }
                 else
                 {
+                    Instantiate(keyPrefab, transform.position + transform.forward, transform.rotation);
                     Destroy(this.gameObject);
                 }
             }
         }
         
+    }
+
+    public void AddHealth(float amountHealth)
+    {
+        if (alive)
+        {
+            health += amountHealth;
+            if (health > 100)
+            {
+                health = 100;
+            }
+        }
+
     }
 
     private void updateHealthBar()

@@ -9,7 +9,7 @@ public class KeyBar : MonoBehaviour {
     {
         if (haveKey)
         {
-            GUI.Box(new Rect(Screen.width / 2, 0, Screen.width / 8, Screen.height / 12), keyImage);
+            GUI.Box(new Rect(Screen.width - Screen.width / 8, 0, Screen.width / 8, Screen.height / 12), keyImage);
         }
     }
 
