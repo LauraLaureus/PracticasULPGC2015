@@ -8,6 +8,7 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 
 	private DoorStatus state = DoorStatus.Lift;
 	private Rigidbody rb;
+    private float f;
 
 	public enum DoorStatus{
 		Lift,
@@ -18,8 +19,14 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 		rb = gameObject.GetComponent<Rigidbody> ();
 		rb.isKinematic = true;
 		rb.useGravity = false;
+        f = transform.position.y;
 	}
 
+    void OnTriggerEnter(Collider other) {
+
+        if (other.gameObject.tag == "Player" && state == DoorStatus.Drop)
+            other.gameObject.GetComponent<Health>().TakeDamage(100);
+    }
 
 	void FixedUpdate(){
 		//Debug.Log("flag");
@@ -28,7 +35,7 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 	}
 
 	IEnumerator Lift(){
-        gameObject.transform.Translate(new Vector3(0, (float)0.1 * Time.fixedDeltaTime, 0));
+        gameObject.transform.Translate(new Vector3(0, (float)0.7* Time.fixedDeltaTime, 0));
 		if(gameObject.transform.position.y > maxHeight){
             state = DoorStatus.Drop;
             Debug.Log("Vamos para abajo");
@@ -37,8 +44,8 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 	}
 
 	IEnumerator Drop(){
-        gameObject.transform.Translate(new Vector3(0, (float)-0.1 * Time.fixedDeltaTime, 0));
-		if(gameObject.transform.position.y <= 0){
+        gameObject.transform.Translate(new Vector3(0, (float)-0.7 * Time.fixedDeltaTime, 0));
+		if(gameObject.transform.position.y <= f){
             state = DoorStatus.Lift;
             Debug.Log("Vamos para arriba");
 		}
