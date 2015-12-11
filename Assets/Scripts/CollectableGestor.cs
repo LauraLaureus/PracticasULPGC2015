@@ -6,8 +6,6 @@ using System.Collections.Generic;
 public class CollectableGestor : MonoBehaviour {
 
     int items;
-    MapCell[,] map;
-    Terrain terrain;
     public int factor = 8;
 
     public GameObject collectablePrefab;
@@ -21,8 +19,6 @@ public class CollectableGestor : MonoBehaviour {
     private void CreateCollectables(MapCell[,] map, int zoneIDmark)
     {
         items = 0;
-        this.map = map;
-        terrain = this.gameObject.GetComponent<Terrain>();
 
         for (int i = 0; i < map.GetLength(0); i++)
         {
