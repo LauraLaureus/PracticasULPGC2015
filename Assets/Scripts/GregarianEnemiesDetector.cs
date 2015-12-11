@@ -11,9 +11,9 @@ public class GregarianEnemiesDetector : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 15f, Vector3.forward);
+		RaycastHit[] hits = Physics.SphereCastAll (this.transform.position, 7f, Vector3.forward);
 		foreach (RaycastHit hit in hits) {
-			if(hit.collider.gameObject.tag =="Bunny" ||hit.collider.gameObject.tag =="Player" ){
+			if(hit.collider.gameObject.tag =="Bunny" || hit.collider.gameObject.tag =="Player" ){
 				mem.setCloseEnemy(hit.collider.gameObject);
 			}
 		}

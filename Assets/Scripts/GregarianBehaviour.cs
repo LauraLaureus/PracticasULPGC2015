@@ -8,6 +8,8 @@ public class GregarianBehaviour : MonoBehaviour {
 	private Rigidbody rb;
 	private NavMeshAgent navMeshAgent;
 	private Vector3 steeringForce;
+    private GregarianSpacialMemory mem;
+    public GameObject weaponPrefab;
 
 
 
@@ -15,6 +17,7 @@ public class GregarianBehaviour : MonoBehaviour {
 		rb = this.gameObject.GetComponent<Rigidbody> ();
 		navMeshAgent = this.gameObject.GetComponent<NavMeshAgent> ();
 		steeringForce = Vector3.zero;
+        mem = gameObject.GetComponent<GregarianSpacialMemory>();
 		StartCoroutine(this.gameObject.GetComponent<GregarianFSM> ().StartFSM ());
 	}
 
@@ -53,9 +56,21 @@ public class GregarianBehaviour : MonoBehaviour {
 		);
 		rb.velocity = transform.forward * navMeshAgent.speed;
 
+        if (mem.areEnemiesClose()) {
+            if (mem.getCloseEnemy().tag == "Player") {
+                shootArrow(mem.getCloseEnemy());
+            }
+        }
+
 		Debug.DrawLine (this.transform.position, this.transform.position + steeringForce,Color.red);
 
 	}
+
+    void shootArrow(GameObject enemy) {
+        GameObject arrow = (GameObject)Instantiate(weaponPrefab, transform.position + (enemy.transform.position - gameObject.transform.position), Quaternion.identity);
+        Rigidbody rbArrow = arrow.GetComponent<Rigidbody>();
+        rbArrow.velocity = (enemy.transform.position-gameObject.transform.position).normalized * 7f;
+    }
 
 	Vector3 calculateSeparationVector(RaycastHit [] hits){
 		Vector3 result = Vector3.zero;
