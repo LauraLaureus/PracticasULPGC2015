@@ -69,7 +69,7 @@ public class GregarianBehaviour : MonoBehaviour {
     void shootArrow(GameObject enemy) {
         GameObject arrow = (GameObject)Instantiate(weaponPrefab, transform.position + (enemy.transform.position - gameObject.transform.position), Quaternion.identity);
         Rigidbody rbArrow = arrow.GetComponent<Rigidbody>();
-        rbArrow.velocity = enemy.transform.position-gameObject.transform.position ;
+        rbArrow.velocity = (enemy.transform.position-gameObject.transform.position).normalized * 7f;
     }
 
 	Vector3 calculateSeparationVector(RaycastHit [] hits){
