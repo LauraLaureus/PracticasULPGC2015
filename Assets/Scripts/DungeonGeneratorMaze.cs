@@ -164,6 +164,7 @@ public class DungeonGeneratorMaze : MonoBehaviour
                         }
                     }
                 }
+                roomsCreated++;
                 attempt = 0;
                 rooms.Add(center);
                 UpdateMap();
