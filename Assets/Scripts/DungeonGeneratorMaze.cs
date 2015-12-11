@@ -13,6 +13,9 @@ public class DungeonGeneratorMaze : MonoBehaviour
     public delegate void MapGeneratedForIAs(List<int[]> ds);
     public static event MapGeneratedForIAs OnLiveNeeded;
 
+    public delegate void MapGeneratedForCollectable(MapCell[,] map, int zoneIDmark);
+    public static event MapGeneratedForCollectable OnItemsNeeded;
+
     public int width = 64;
     public int height = 64;
 
@@ -112,6 +115,9 @@ public class DungeonGeneratorMaze : MonoBehaviour
         //Reciclar para spawners
         if (OnLiveNeeded != null)
             OnLiveNeeded(rooms);
+
+        if (OnItemsNeeded != null)
+            OnItemsNeeded(map, zoneIDmark);
     }
 
     void UpdateMap()

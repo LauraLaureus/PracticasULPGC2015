@@ -6,12 +6,13 @@ public class ArrowController : MonoBehaviour {
     public float maxTimeAlive = 5;
     private Rigidbody rb;
     private float timeAlive;
-
+    private Collider collider;
 
 
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody>();
+        collider = this.GetComponent<Collider>();
         timeAlive = 0;
 	}
 	
@@ -21,6 +22,14 @@ public class ArrowController : MonoBehaviour {
         if (timeAlive > maxTimeAlive)
             Destroy(this.gameObject);
 	}
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Collectable"))
+        {
+            Physics.IgnoreCollision(collision.collider, collider);
+        }
+    }
 
     void OnTriggerEnter(Collider other)
     {

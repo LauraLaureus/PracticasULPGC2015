@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class KeyController : MonoBehaviour {
+public class Rotator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

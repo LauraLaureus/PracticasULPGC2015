@@ -42,7 +42,6 @@ public class HeightMapApplicatorIA : MonoBehaviour
 
     float getSuitableHeightFromMap(MapCell[,] map, int indexX, int indexY, float[,] heights)
     {
-
         int indexXmap = Mathf.Clamp((int)(indexX / factor), 0, map.GetLength(0) - 1);
         int indexYmap = Mathf.Clamp((int)(indexY / factor), 0, map.GetLength(1) - 1);
         if (map[indexXmap, indexYmap].cellKind == MapCell.CellKind.WALKABLE && !map[indexXmap, indexYmap].isBorder)

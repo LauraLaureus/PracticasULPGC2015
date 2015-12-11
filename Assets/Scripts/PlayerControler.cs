@@ -13,6 +13,9 @@ public class PlayerControler : MonoBehaviour {
 
     public Health health;
 
+    public delegate void CollectablePicked();
+    public static event CollectablePicked OnCollectablePicked;
+
     public float maxLoad = 10.0f;
     public float growFactor = 2;
 
@@ -43,7 +46,16 @@ public class PlayerControler : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Key"))
+        if (other.gameObject.CompareTag("Collectable"))
+        {
+            Destroy(other.gameObject);
+            if(OnCollectablePicked != null)
+            {
+                OnCollectablePicked();
+            }
+
+        }
+        else if (other.gameObject.CompareTag("Key"))
         {
             Destroy(other.gameObject);
             haveKey = true;
