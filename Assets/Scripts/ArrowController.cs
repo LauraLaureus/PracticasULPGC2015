@@ -24,8 +24,8 @@ public class ArrowController : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player"))
-        {
+        //if (!other.CompareTag("Player"))
+        //{
             GetComponent<Collider>().enabled = false;
             Destroy(rb);
 
@@ -36,7 +36,7 @@ public class ArrowController : MonoBehaviour {
                 healthscript.TakeDamage(damage);
                 Destroy(this.gameObject);
             }
-        }
+        //}
 
     }
 }

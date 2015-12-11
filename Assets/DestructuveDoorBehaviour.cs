@@ -44,7 +44,7 @@ public class DestructuveDoorBehaviour : MonoBehaviour {
 	}
 
 	IEnumerator Drop(){
-        gameObject.transform.Translate(new Vector3(0, (float)-0.7 * Time.fixedDeltaTime, 0));
+        gameObject.transform.Translate(new Vector3(0, (float)-2.1 * Time.fixedDeltaTime, 0));
 		if(gameObject.transform.position.y <= f){
             state = DoorStatus.Lift;
             Debug.Log("Vamos para arriba");
